@@ -23,4 +23,4 @@ import sys
 import iobox
 
 if __name__ == "__main__":
-    sys.exit(iobox.oneshot())
+    sys.exit(iobox.oneshot(sys.argv))
