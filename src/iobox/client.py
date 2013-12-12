@@ -30,10 +30,10 @@ class Client (object):
     def __init__(self, baseuri, username, password):
         self.baseuri = baseuri
         o = urlparse.urlparse(self.baseuri)
-        print o
         self.scheme = o[0]
         host_port = o[1].split(":")
         self.host = host_port[0]
+        self.path = o.path
         self.port = None
         if len(host_port) > 1:
             self.port = host_port[1]

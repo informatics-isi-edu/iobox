@@ -19,6 +19,7 @@ Command line routines for the Outbox
 """
 
 import json
+from httplib import HTTPException
 
 from client import Client
 
@@ -39,7 +40,8 @@ Exit status:
 
   0  for success
   1  for usage error
-  2  for system error
+  2  for server error
+  3  for system error
   
 """     % dict(prog=prog)
 
@@ -55,6 +57,7 @@ def oneshot(args=None):
             
             _do_oneshot(resource_url,
                         username, password, filename)
+            print "successfully registered %s" % filename
             
         else:
             _usage(args[0])
@@ -62,12 +65,17 @@ def oneshot(args=None):
         
         return 0
     
+    except HTTPException, ev:
+        print str(ev)
+        return 2
+    
     except Exception, ev:
         print 'error: %s' % str(ev)
-        return 2
+        return 3
 
 def _do_oneshot(url, username, password, filename):
     # make json payload
+    #    note: cirm demo specific content
     payload = dict(id=filename,
                    slide_id=None,
                    scan_num=0,
@@ -75,19 +83,15 @@ def _do_oneshot(url, username, password, filename):
                    thumbnail='',
                    tilesdir='',
                    comment='IOBox uploaded this file resource')
-    body = json.dumps(payload)
+    body = json.dumps([payload])
     
     # login and post update
     client = Client(url, username, password)
     login_cookie = client.send_login_request()
     headers = {}
-    headers["Content-Type"] = "application/json"
-    headers["Cookie"] = login_cookie
+    headers['Content-Type'] = 'application/json'
+    headers['Cookie'] = login_cookie
+    path = client.path
     
-    print """
-POST %(url)s
-  %(body)s
-"""         % dict(url=url,
-                   body=payload)
-    
-    client.send_request("PUT", url, body, headers)
+    # send update
+    return client.send_request('PUT', path, body, headers)
