@@ -61,7 +61,7 @@ def oneshot(args=None):
                 body[key] = value
                 
             _do_oneshot(resource_url, username, password, body)
-            print "successfully registered %s" % str(body)
+            print "successfully imported: " % str(body)
             
         else:
             _usage(args[0])
