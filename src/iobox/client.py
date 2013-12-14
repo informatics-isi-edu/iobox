@@ -27,7 +27,7 @@ class Client (object):
     """
     ## Derived from the tagfiler iobox service client
 
-    def __init__(self, baseuri, username, password):
+    def __init__(self, baseuri, username, password, goauth=''):
         self.baseuri = baseuri
         o = urlparse.urlparse(self.baseuri)
         self.scheme = o[0]
@@ -39,6 +39,7 @@ class Client (object):
             self.port = host_port[1]
         self.username = username
         self.password = password
+        self.goauth = goauth if len(goauth)>0 else None
 
     def send_request(self, method, url, body='', headers={}):
         

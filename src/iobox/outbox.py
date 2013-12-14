@@ -25,9 +25,13 @@ from client import Client
 
 __all__ = ['oneshot']
 
+__OPT_HELP     = '--help'
 __OPT_USERNAME = '--username='
 __OPT_PASSWORD = '--password='
 __OPT_GOAUTH   = '--goauth'
+__GOAUTH_TEST_IDP = 'https://graph.api.test.globuscs.info/goauth/token?grant_type=client_credentials'
+__GOAUTH_DEFAULT_IDP = __GOAUTH_TEST_IDP
+
 
 def _usage(prog):
     print """
@@ -36,9 +40,11 @@ usage: %(prog)s [OPTIONS] <resource url> {<key>=<value>+}
 Run this utility to perform a oneshot Outbox operation.
 
   options:
+      --help                   Print this and exit.
       --username=<username>    The user name.
       --password=<password>    The user password.
-      --goauth                 Use Globus authentication.
+      --goauth[=<url>]         Use Globus authentication. If given, use the
+                               goauth identity provider at <url>.
 
   arguments:
       <resource url>           The resource (entity) URL.
@@ -58,14 +64,19 @@ def oneshot(args=None):
     """Oneshot (single invocation) outbox routine.
     """
     # parse options
+    (username, password, goauth) = ('', '', '')
     options = [opt for opt in args if opt.startswith('--')]
     for opt in options:
-        if opt.startswith(__OPT_USERNAME):
+        if opt == __OPT_HELP:
+            _usage(args[0])
+            return 0
+        elif opt.startswith(__OPT_USERNAME):
             username = opt[len(__OPT_USERNAME):]
         elif opt.startswith(__OPT_PASSWORD):
             password = opt[len(__OPT_PASSWORD):]
         elif opt.startswith(__OPT_GOAUTH):
-            goauth = True
+            goauth = opt[len(__OPT_GOAUTH)+1:]
+            goauth = goauth if len(goauth)>0 else __GOAUTH_DEFAULT_IDP
         else:
             _usage(args[0])
             return 1
