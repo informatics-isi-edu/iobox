@@ -25,19 +25,26 @@ from client import Client
 
 __all__ = ['oneshot']
 
+__OPT_USERNAME = '--username='
+__OPT_PASSWORD = '--password='
+__OPT_GOAUTH   = '--goauth'
+
 def _usage(prog):
     print """
-usage: %(prog)s <resource url> <username> <password> [<key>=<value>+]
+usage: %(prog)s [OPTIONS] <resource url> {<key>=<value>+}
 
 Run this utility to perform a oneshot Outbox operation.
 
-  args: <resource url>    The HTTP/S URL of the ERMREST Resource.
-        <username>        The user name.
-        <password>        The user password.
-        <filename>        The file to be registered in the catalog.
-        <key>=<value>+    One or more key=value pairs for the json 
-                          body of the request.
-        
+  options:
+      --username=<username>    The user name.
+      --password=<password>    The user password.
+      --goauth                 Use Globus authentication.
+
+  arguments:
+      <resource url>           The resource (entity) URL.
+      <key>=<value>+           One or more key=value pairs to assign to the
+                               resource.
+
 Exit status:
 
   0  for success
@@ -50,23 +57,34 @@ Exit status:
 def oneshot(args=None):
     """Oneshot (single invocation) outbox routine.
     """
-    try:
-        if len(args) > 4:
-            resource_url = args[1]
-            username = args[2]
-            password = args[3]
-            body = dict()
-            for keyval in args[4:]:
-                (key, value) = keyval.split('=',1)
-                body[key] = value
-                
-            _do_oneshot(resource_url, username, password, body)
-            print "successfully imported: " % str(body)
-            
+    # parse options
+    options = [opt for opt in args if opt.startswith('--')]
+    for opt in options:
+        if opt.startswith(__OPT_USERNAME):
+            username = opt[len(__OPT_USERNAME):]
+        elif opt.startswith(__OPT_PASSWORD):
+            password = opt[len(__OPT_PASSWORD):]
+        elif opt.startswith(__OPT_GOAUTH):
+            goauth = True
         else:
             _usage(args[0])
             return 1
+    
+    # parse required args
+    args = [arg for arg in args if arg not in options]
+    if len(args) < 3:
+        _usage(args[0])
+        return 1
+    resource_url = args[1]
+    body = dict()
+    for keyval in args[2:]:
+        (key, value) = keyval.split('=',1)
+        body[key] = value
         
+    try:
+        print str(body)
+        _do_oneshot(resource_url, username, password, body)
+        print "successfully imported: " % str(body)
         return 0
     
     except HTTPException, ev:
