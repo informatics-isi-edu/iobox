@@ -27,14 +27,16 @@ __all__ = ['oneshot']
 
 def _usage(prog):
     print """
-usage: %(prog)s <resource url> <username> <password> <filename>
+usage: %(prog)s <resource url> <username> <password> [<key>=<value>+]
 
 Run this utility to perform a oneshot Outbox operation.
 
-  args: <resource url>    The HTTP/S URL of the ERMREST Resource
-        <username>        The user name
-        <password>        The user password
-        <filename>        The file to be registered in the catalog
+  args: <resource url>    The HTTP/S URL of the ERMREST Resource.
+        <username>        The user name.
+        <password>        The user password.
+        <filename>        The file to be registered in the catalog.
+        <key>=<value>+    One or more key=value pairs for the json 
+                          body of the request.
         
 Exit status:
 
@@ -49,15 +51,17 @@ def oneshot(args=None):
     """Oneshot (single invocation) outbox routine.
     """
     try:
-        if len(args) == 5:
+        if len(args) > 4:
             resource_url = args[1]
             username = args[2]
             password = args[3]
-            filename = args[4]
-            
-            _do_oneshot(resource_url,
-                        username, password, filename)
-            print "successfully registered %s" % filename
+            body = dict()
+            for keyval in args[4:]:
+                (key, value) = keyval.split('=',1)
+                body[key] = value
+                
+            _do_oneshot(resource_url, username, password, body)
+            print "successfully registered %s" % str(body)
             
         else:
             _usage(args[0])
@@ -73,17 +77,9 @@ def oneshot(args=None):
         print 'error: %s' % str(ev)
         return 3
 
-def _do_oneshot(url, username, password, filename):
+def _do_oneshot(url, username, password, body):
     # make json payload
-    #    note: cirm demo specific content
-    payload = dict(id=filename,
-                   slide_id=None,
-                   scan_num=0,
-                   filename=filename,
-                   thumbnail='',
-                   tilesdir='',
-                   comment='IOBox uploaded this file resource')
-    body = json.dumps([payload])
+    body = json.dumps([body])
     
     # login and post update
     client = Client(url, username, password)
