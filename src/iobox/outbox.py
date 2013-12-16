@@ -45,7 +45,7 @@ usage: %(prog)s [OPTIONS] <resource url> {<key>=<value>+}
 
 Run this utility to perform a oneshot Outbox operation.
 
-  options:
+  Options:
       --help                   Print this and exit.
       --username=<username>    The user name.
       --password=<password>    The user password.
@@ -55,7 +55,7 @@ Run this utility to perform a oneshot Outbox operation.
                                Use the goauth token presented directly in
                                <token> or read from <file>.
 
-  arguments:
+  Arguments:
       <resource url>           The resource (entity) URL.
       <key>=<value>+           One or more key=value pairs to assign to the
                                resource.
@@ -71,7 +71,7 @@ Exit status:
 
 
 def oneshot(args=None):
-    """Oneshot (single invocation) outbox routine.
+    """Oneshot (single invocation) outbox commandline routine.
     """
     prog = os.path.basename(args[0])
     # parse options
@@ -113,23 +113,25 @@ def oneshot(args=None):
         (key, value) = keyval.split('=',1)
         body[key] = value
     
-    # check if password needed
-    if not goauthtok:
-        if not username:
-            print "error: goauth-tok or username and password required"
-            return 1
-        elif not password:
-            password = getpass.getpass('password:')
-    
     try:
+        # build creds
+        creds = dict()
         if goauthtok:
-            _do_oneshot(resource_url, body, use_goauth,
-                        goauthtok=goauthtok)
+            creds['goauthtok'] = goauthtok
         else:
-            _do_oneshot(resource_url, body, use_goauth,
-                        username=username,
-                        password=password,
-                        goauthurl=goauthurl)
+            if not username:
+                raise Exception("goauth-tok or username and password required")
+            elif not password:
+                password = getpass.getpass("Enter password for user '%s':" % 
+                                           username)
+            creds['username'] = username
+            creds['password'] = password
+        
+        _do_oneshot(resource_url, body, use_goauth, **creds)
+    
+    except KeyboardInterrupt:
+        print
+        return 0
     
     except httplib.HTTPException, ev:
         print 'error: %s' % str(ev)
@@ -144,6 +146,8 @@ def oneshot(args=None):
 
 
 def _do_oneshot(url, body, use_goauth, **kwargs):
+    """Authenticates client (if necessary) and sends update request.
+    """
     client = Client(url, use_goauth)
     path = client.path
     headers = {'Content-Type': 'application/json'}
@@ -151,10 +155,8 @@ def _do_oneshot(url, body, use_goauth, **kwargs):
     
     if 'goauthtok' in kwargs:
         headers['Authorization'] = "Globus-Goauthtoken %s" % kwargs['goauthtok']
-        #print "using goauth token: " + str(headers)
     else:
         auth_headers = client.send_login_request(kwargs['username'], kwargs['password'])
         headers.update(auth_headers)
         
-    # send update
     return client.send_request('PUT', path, body, headers)
