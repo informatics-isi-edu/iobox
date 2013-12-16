@@ -27,7 +27,7 @@ class Client (object):
     """
     ## Derived from the tagfiler iobox service client
 
-    def __init__(self, baseuri, username, password, goauth=''):
+    def __init__(self, baseuri):
         self.baseuri = baseuri
         o = urlparse.urlparse(self.baseuri)
         self.scheme = o[0]
@@ -37,9 +37,6 @@ class Client (object):
         self.port = None
         if len(host_port) > 1:
             self.port = host_port[1]
-        self.username = username
-        self.password = password
-        self.goauth = goauth if len(goauth)>0 else None
 
     def send_request(self, method, url, body='', headers={}):
         
@@ -56,8 +53,8 @@ class Client (object):
             raise HTTPException("Error response (%i) received: %s" % (resp.status, resp.read()))
         return resp
 
-    def send_login_request(self):
+    def send_login_request(self, username, password):
         headers = {}
         headers["Content-Type"] = "application/x-www-form-urlencoded"
-        resp = self.send_request("POST", "/ermrest/authn/session", "username=%s&password=%s" % (self.username, self.password), headers)
+        resp = self.send_request("POST", "/ermrest/authn/session", "username=%s&password=%s" % (username, password), headers)
         return resp.getheader("set-cookie")
