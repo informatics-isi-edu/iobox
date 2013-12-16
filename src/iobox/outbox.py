@@ -22,7 +22,6 @@ import os
 import getpass
 import json
 import httplib
-import exceptions
 
 from client import Client
 
@@ -35,7 +34,6 @@ __OPT_GOAUTH     = '--goauth'
 __OPT_GOAUTH_URL = '--goauth-url='
 __OPT_GOAUTH_TOK = '--goauth-tok='
 __GOAUTH_TEST_IDP    = 'https://graph.api.test.globuscs.info/goauth/token?grant_type=client_credentials'
-__GOAUTH_SERBAN_IDP  = 'https://serbancentos.isi.edu/goauth/token?grant_type=client_credentials'
 __GOAUTH_DEFAULT_IDP = __GOAUTH_TEST_IDP
 
 

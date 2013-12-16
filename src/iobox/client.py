@@ -18,6 +18,7 @@
 Raw network client for HTTP(S) communication with ERMREST service.
 """
 
+import json
 import base64
 import urlparse
 from httplib import HTTPConnection, HTTPSConnection, HTTPException, OK, CREATED, ACCEPTED, NO_CONTENT
@@ -60,7 +61,9 @@ class Client (object):
             auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
             headers = dict(Authorization='Basic %s' % auth)
             resp = self.send_request('GET', '/service/nexus/goauth/token?grant_type=client_credentials', '', headers)
-            return dict(Authorization='Globus-Goauthtoken %s' % resp.read())
+            goauth = json.loads(resp.read())
+            access_token = goauth['access_token']
+            return dict(Authorization='Globus-Goauthtoken %s' % access_token)
         else:
             headers = {}
             headers["Content-Type"] = "application/x-www-form-urlencoded"
