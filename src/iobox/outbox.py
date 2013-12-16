@@ -22,6 +22,7 @@ import os
 import getpass
 import json
 import httplib
+import exceptions
 
 from client import Client
 
@@ -30,6 +31,7 @@ __all__ = ['oneshot']
 __OPT_HELP       = '--help'
 __OPT_USERNAME   = '--username='
 __OPT_PASSWORD   = '--password='
+__OPT_GOAUTH     = '--goauth'
 __OPT_GOAUTH_URL = '--goauth-url='
 __OPT_GOAUTH_TOK = '--goauth-tok='
 __GOAUTH_TEST_IDP    = 'https://graph.api.test.globuscs.info/goauth/token?grant_type=client_credentials'
@@ -47,6 +49,7 @@ Run this utility to perform a oneshot Outbox operation.
       --help                   Print this and exit.
       --username=<username>    The user name.
       --password=<password>    The user password.
+      --goauth                 Use Globus goauth
       --goauth-url=<url>       Use the goauth identity provider at <url>.
       --goauth-tok=[@<file>|<token>]
                                Use the goauth token presented directly in
@@ -73,7 +76,7 @@ def oneshot(args=None):
     prog = os.path.basename(args[0])
     # parse options
     username, password = (None, None)
-    goauthurl, goauthtok = (None, None)
+    use_goauth, goauthurl, goauthtok = (False, None, None)
     options = [opt for opt in args if opt.startswith('--')]
     for opt in options:
         if opt == __OPT_HELP:
@@ -83,9 +86,13 @@ def oneshot(args=None):
             username = opt[len(__OPT_USERNAME):]
         elif opt.startswith(__OPT_PASSWORD):
             password = opt[len(__OPT_PASSWORD):]
+        elif opt == __OPT_GOAUTH:
+            use_goauth = True
         elif opt.startswith(__OPT_GOAUTH_URL):
             goauthurl = opt[len(__OPT_GOAUTH_URL):]
             goauthurl = goauthurl if len(goauthurl)>0 else __GOAUTH_DEFAULT_IDP
+            print "error: %s not supported yet" % __OPT_GOAUTH_URL
+            return 1
         elif opt.startswith(__OPT_GOAUTH_TOK):
             goauthtok = opt[len(__OPT_GOAUTH_TOK):]
             if goauthtok.startswith('@'):
@@ -116,10 +123,10 @@ def oneshot(args=None):
     
     try:
         if goauthtok:
-            _do_oneshot(resource_url, body,
+            _do_oneshot(resource_url, body, use_goauth,
                         goauthtok=goauthtok)
         else:
-            _do_oneshot(resource_url, body,
+            _do_oneshot(resource_url, body, use_goauth,
                         username=username,
                         password=password,
                         goauthurl=goauthurl)
@@ -136,18 +143,18 @@ def oneshot(args=None):
     return 0
 
 
-def _do_oneshot(url, body, **kwargs):
-    client = Client(url)
+def _do_oneshot(url, body, use_goauth, **kwargs):
+    client = Client(url, use_goauth)
     path = client.path
     headers = {'Content-Type': 'application/json'}
     body = json.dumps([body])
     
     if 'goauthtok' in kwargs:
-        headers['Globus-Goauthtoken'] = kwargs['goauthtok']
+        headers['Authorization'] = "Globus-Goauthtoken %s" % kwargs['goauthtok']
         #print "using goauth token: " + str(headers)
     else:
-        login_cookie = client.send_login_request(kwargs['username'], kwargs['password'])
-        headers['Cookie'] = login_cookie
+        auth_headers = client.send_login_request(kwargs['username'], kwargs['password'])
+        headers.update(auth_headers)
         
     # send update
     return client.send_request('PUT', path, body, headers)

@@ -18,6 +18,7 @@
 Raw network client for HTTP(S) communication with ERMREST service.
 """
 
+import base64
 import urlparse
 from httplib import HTTPConnection, HTTPSConnection, HTTPException, OK, CREATED, ACCEPTED, NO_CONTENT
 
@@ -27,7 +28,7 @@ class Client (object):
     """
     ## Derived from the tagfiler iobox service client
 
-    def __init__(self, baseuri):
+    def __init__(self, baseuri, use_goauth=False):
         self.baseuri = baseuri
         o = urlparse.urlparse(self.baseuri)
         self.scheme = o[0]
@@ -37,6 +38,7 @@ class Client (object):
         self.port = None
         if len(host_port) > 1:
             self.port = host_port[1]
+        self.use_goauth = use_goauth
 
     def send_request(self, method, url, body='', headers={}):
         
@@ -54,7 +56,13 @@ class Client (object):
         return resp
 
     def send_login_request(self, username, password):
-        headers = {}
-        headers["Content-Type"] = "application/x-www-form-urlencoded"
-        resp = self.send_request("POST", "/ermrest/authn/session", "username=%s&password=%s" % (username, password), headers)
-        return resp.getheader("set-cookie")
+        if self.use_goauth:
+            auth = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+            headers = dict(Authorization='Basic %s' % auth)
+            resp = self.send_request('GET', '/service/nexus/goauth/token?grant_type=client_credentials', '', headers)
+            return dict(Authorization='Globus-Goauthtoken %s' % resp.read())
+        else:
+            headers = {}
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            resp = self.send_request("POST", "/ermrest/authn/session", "username=%s&password=%s" % (username, password), headers)
+            return dict(Cookie=resp.getheader("set-cookie"))
