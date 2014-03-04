@@ -204,7 +204,6 @@ def main(args=None):
     
     state = OutboxStateDAO(outbox_model.state_db)
     worklist = []
-    rworklist = []
     found = 0
     skipped = 0
     registered = 0
@@ -228,12 +227,11 @@ def main(args=None):
                 f.checksum = sha256sum(filename)
                 state.add_file(f)
                 worklist.append(f)
-                rworklist.append(f)
                 added += 1
             elif not exists.rtime:
                 # Case: File has not been registered
                 logger.debug("Not registered: %s" % filename)
-                rworklist.append(exists)
+                worklist.append(exists)
             else:
                 # Case: File does not meet any criteria for processing
                 logger.debug("Skipping: %s" % filename)
@@ -242,7 +240,7 @@ def main(args=None):
     # Register files in worklist
     if len(worklist):
         client.add_subjects(worklist, outbox_model.bulk_ops_max)
-    for f in rworklist:
+    for f in worklist:
         logger.debug("Registered: %s" % f.filename)
         f.rtime = time.time()
         state.update_file(f)
