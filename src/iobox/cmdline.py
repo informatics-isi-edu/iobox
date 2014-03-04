@@ -51,7 +51,7 @@ __LOGLEVEL = {0: logging.ERROR,
               2: logging.INFO,
               3: logging.DEBUG}
 __LOGLEVEL_MAX = 3
-__LOGLEVEL_DEFAULT = 3
+__LOGLEVEL_DEFAULT = 0
 
 
 def main(args=None):
@@ -251,8 +251,8 @@ def main(args=None):
     # Print final message unless '--quiet'
     if not args.quiet:
         # Print concluding message to stdout
-        print "Done. Found=%s Added=%s Skipped=%s Registered=%s" % \
-                    (found, added, skipped, registered)
+        logger.info("Done. Found=%s Added=%s Skipped=%s Registered=%s" % \
+                    (found, added, skipped, registered))
     
     try:
         client.close()

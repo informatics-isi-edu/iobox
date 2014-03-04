@@ -216,9 +216,9 @@ class ErmrestClient (object):
             url = '%s/entity/scan' % self.path
             headers = {'Content-Type': 'application/json'}
             try:
-                self.send_request('POST', url, json.dumps(body), headers)
+                self.send_request('PUT', url, json.dumps(body), headers)
             except HTTPException, e:
-                logger.debug('Error during POST attempt:\n%s' % str(e))
+                logger.error('Error during PUT attempt:\n%s' % str(e))
             except:
                 raise
                     
