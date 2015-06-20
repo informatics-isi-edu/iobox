@@ -38,6 +38,7 @@ specification.
 * Asset data files subdirectory
 * Schema tag directory
 
+Structure of the *Beanbag* profile of the *BagIt* specification:
 
     <base directory>/
     |  bagit.txt
