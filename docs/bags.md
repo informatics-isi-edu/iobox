@@ -1,12 +1,11 @@
-# Beanbag (*draft*)
+# Beanbag Format (*draft*)
 
-Beanbag is a profile and extension of the simple hierarchical
-packaging file format BagIt defined by the IETF draft specification
-[The BagIt File Packaging Format (V0.97)](https://tools.ietf.org/html/draft-kunze-bagit-10).
+*Beanbag* is a profile for using *BagIt*, a simple hierarchical packaging file
+format defined by IETF draft [The BagIt File Packaging Format (V0.97)][BagIt].
 
-## BagIt
+## BagIt Structure
 
-Structure of a standard BagIt:
+Structure of a standard *BagIt*:
 
     <base directory>/
     |  bagit.txt
@@ -17,10 +16,11 @@ Structure of a standard BagIt:
     \--- [optional tag directories]/
           | [optional tag files]
 
-### Optional: `fetch.txt`
+### Fetch Files: `fetch.txt`
 
-Among the standard BagIt optional additional tag files is the `fetch.txt` file.
-The contents of which are:
+*BagIt* allows for files in the manifest to be contained within the package or
+externally referenced in the optional `fetch.txt` tag file. The format of
+`fetch.txt` is:
 
     URL LENGTH FILENAME
 
@@ -28,97 +28,126 @@ This allows the bag to include references to files rather than include the
 entire contents of files in the payload section. See the formal specification
 for details.
 
-## Beanbag profile
+## Beanbag Profile
 
-The beanbag profile adds the following elements to the base
-specification.
+*Beanbag* is a profile for using the *BagIt* file specification. Packages
+that conform to the *Beanbag* profile are valid *BagIt* packages as well.
 
-* Beanbag metadata tag file
-* Table data files subdirectory
-* Asset data files subdirectory
-* Schema tag directory
+### Summary
+
+* *Beanbag*-specific bag metadata
+* Optional schema description of payload files
+* Recommend URL-encoding of payload file names
+* Recommend `text/csv` payload files follow [RFC 4180]
+
+
+### Package Structure
 
 Structure of the *Beanbag* profile of the *BagIt* specification:
 
     <base directory>/
     |  bagit.txt
+    |  bag-info.txt
     |  manifest-<algorithm>.txt
-    |  beanbag.txt
+    |  tagmanifest-<algorithm>.txt
+    |  schema.json
     |  [optional additional tag files]
     \--- data/
-          \--- tables/
-                | [optional <schema-table-name>.csv files]
-          \--- assets/
-                | [optional asset data files]
           | [optional payload files]
-    \--- schema/
-          | [optional <schema-name>.json files]
-          | [and/or <table-name>.json files]
     \--- [optional tag directories]/
           | [optional tag files]
 
-### Element: `beanbag.txt`
+**Note** that `schema.json` is the only new tag file specified by the *Beanbag*
+profile.
 
-The `beanbag.txt` must contain the following fields.
+### Beanbag Metadata: `bag-info.txt`
 
-    Beanbag version: <version-number>
+*BagIt* allows for optional bag metadata in the `bag-info.txt` tag file.
+*Beanbag* packages should include the following bag metadata.
 
-Where `version-number` should match the version of the *beanbag* file
-specification followed.
+    Beanbag-version: <version-number>
 
-### Element: `data/tables/`
+Where `version-number` should match the version of the *Beanbag* profile used by
+the package.
 
-The `data/tables/` subdirectory may contain optional table data files. These
-files are expected in comma-separate values (CSV) format with the following
-encoding rules.
+### Tag Manifest: `tagmanifest-<algorithm>.txt`
 
-1. They must be encoded in UTF-8
-1. The first row must be a header row
-1. Values must be separated by a comma (,) character
-1. Values that need escaping must be escaped by single quotes (') character
-1. Each row of values must be terminated by a carriage return (CR) character
+*BagIt* specifies an optional manifest file for tag files in the
+`tagmanifest-<algorithm>.txt` file. *Beanbag* packages that contain the optional
+schema description file `schema.json` must include the *BagIt* tag file
+manifest.
 
-The table files (i.e., CSV files) must be named `schema-table-name.csv` where
-`schema` is a subpart of the name used to scope the namespace for the `table`
-name.
+### Recommended URL-encoded Filenames
 
-### Element: `data/assets/`
+In addition to the *BagIt* requirement for UTF-8 encoding, payload file names
+should also be URL-encoded per [RFC 1738].
 
-The `data/assets/` subdirectory may contain optional asset data files. Assets
-may be any file format and are treated as opaque binary objects.
+### Recommended `text/csv` Formatting
 
-### Element: `schema/`
+The *Beanbag* profile recommends the use of [RFC 4180] for `text/csv` typed
+payload files, also known as Comma-Separated Values (CSV) files. In addition to
+RFC 4180, this profile also recommends the following.
 
-The `schema` subdirectory may contain option schema representation files. These
-files describe the schema for the `table` data files. The schema representation
-must be encoded in JavaScript Object Notation (JSON) format. The *beanbag* file
-must include:
+1. The header row MUST be present with column names that exactly match the
+   model described in the optional schema tag file.
 
-1. One or more `<schema-name>.json` files; and/or
-2. One or more `schema-table-name>.json` files.
+2. The entire file MUST be UTF-8 encoded and each quoted or unquoted field value
+   MUST be a valid UTF-8 sequence, i.e. field separator, record separator,
+   quoted string delimiter, or end of file MUST NOT follow an incomplete
+   multi-byte character.
 
-The schema description file(s) must describe the schema for all table files
-included in the `data/tables/` subdirectory.
+### Schema Description: `schema.json`
 
-Example `<schema-name>.json`:  
+A *Beanbag* package may contain an optional schema description in the
+`schema.json` file. The schema references and describes the structure of payload
+files contained in the package (or referenced by the `fetch.txt` tag file). A
+schema description should only be considered *internally consistent* within the
+*Beanbag* package. There are no guarantees regarding the relationship of the
+schema to any external data or systems.
 
-*TODO* insert example here. This will be exactly what comes out of ERMrest.
+In the current draft of *Beanbag*, the schema may be used to describe the
+structure of `text/csv` payload files. The structure includes the expected
+column headers, the column header types, the relationship of columns to other
+columns in the same CSV file or in other CSV files, and the relationship of
+columns to other payload data files included or referenced in the package.
 
-Example `<schema-table-name>.json`:  
+An incomplete example follows. Suppose the payload of a *Beanbag* package
+included the following `text/csv` file.
 
-*TODO* insert example here. This will be exactly what comes out of ERMrest.
+```
+data/foo/bar.csv
+```
 
-## Notes
+The corresponding schema description (`schema.json`) file could describe it as
+follows.
+
+```javascript
+{ "schemas": [
+  { "name": "foo" }
+    "tables": [
+      { "name": "bar.csv",
+         "columns": [
+           { "name": "a_column",
+             "type": "int64" },
+              ...
+      ]},
+      ...
+  ]},
+  ...
+]}
+```
+
+In the example, the schema named `foo` maps to the directory `data/foo` and its
+table `bar.csv` maps to the file named `data/foo/bar.csv`. From the example,
+`bar.csv` should include a header row with a column named `a_column` which
+contains UTF-8 encoded values within the `int64` numeric value range.
+
+# Notes
 
 This is a *draft* specification.
 
-The *beanbag* file should probably have a required tag file for *provenance* at
-the top level that includes information on author and timestamp at least.
+The *Beanbag* profile should provide recommendations for including provenance.
 
-The table data could be generalized to support alternative representations of
-"structured" or "metadata" files.
-
-Alternatively, the `tables` and `assets` subdirectories could be abandoned in
-favor of flattening all files under `data` and including a custom tag file that
-indicates which data files should be treated like metadata and which should be
-treated like assets (i.e., objects).
+[BagIt]: https://tools.ietf.org/html/draft-kunze-bagit-10 "The BagIt File Packaging Format (V0.97)"
+[RFC 1738]: http://www.ietf.org/rfc/rfc1738.txt "RFC 1738"
+[RFC 4180]: http://www.ietf.org/rfc/rfc4180.txt "RFC 4180"
