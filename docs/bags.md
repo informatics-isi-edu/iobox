@@ -62,8 +62,13 @@ profile.
 
 ### Beanbag Metadata: `bag-info.txt`
 
-*BagIt* allows for optional bag metadata in the `bag-info.txt` tag file.
-*Beanbag* packages should include the following bag metadata.
+*BagIt* allows for optional bag metadata in the `bag-info.txt` tag file.  This file must be included in a *Beanbag* bag.  The following standard metadata tags are required.
+
+    Bagging-Date  Date (YYYY-MM-DD) that the content was prepared for delivery.
+
+    Internal-Sender-Identifier  An alternate sender-specific identifier for the content and/or bag.  This value should be a GUID in URI format
+
+In addition, *Beanbag* packages should include the following bag metadata.
 
     Beanbag-version: <version-number>
 
