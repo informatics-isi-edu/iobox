@@ -153,6 +153,9 @@ This is a *draft* specification.
 
 The *Beanbag* profile should provide recommendations for including provenance.
 
+It has suggested that we may want to track origional URL for files that are included in the bag. This might be something like a fetched.txt which would be in the same format as the fetch.txt file, but would also apply to files that are currently located in the data directory.  Alternatively, this information might be included in per-asset metadata that would be included in an OAI compliented metadata file.
+
+
 [BagIt]: https://tools.ietf.org/html/draft-kunze-bagit-10 "The BagIt File Packaging Format (V0.97)"
 [RFC 1738]: http://www.ietf.org/rfc/rfc1738.txt "RFC 1738"
 [RFC 4180]: http://www.ietf.org/rfc/rfc4180.txt "RFC 4180"
