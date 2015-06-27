@@ -1,0 +1,42 @@
+{
+   "BagIt-Profile-Info":{
+      "BagIt-Profile-Identifier":"http://www.bdds.org/bagitprofiles/beanbag.json",
+      "Source-Organization":"BDDS",
+      "Contact-Name":"Carl Kesselman",
+      "External-Description":"BagIt profile for packaging datasets for ERMRest/Globus Publish/BDDS",
+      "Version":"0.1"
+   },
+   "Bag-Info":{
+      "Bagging-Date":{
+         "required":true
+      },
+      "Internal-Sender-Identifier":{
+        "required":true,
+      }
+      "Source-Organization":{
+         "required":optional,
+      },
+      "Contact-Phone":{
+         "required":false
+      }
+      "Lineage":{
+        "required":false
+   },
+   "Manifests-Required":[
+      "md5"
+   ],
+   "Allow-Fetch.txt":true,
+   "Serialization":"optional",
+   "Accept-Serialization":[
+      "application/zip",
+   ],
+   "Accept-BagIt-Version":[
+      "0.97"
+   ]
+  "Tag-Manifests-Required":[
+    "md5"
+  ],
+  "Tag-Files-Required":[
+    "md5"
+  ]
+}
