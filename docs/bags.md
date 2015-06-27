@@ -76,10 +76,10 @@ COMMENT: The Internal-Sender-Identifer should be modeled after the URI-A specifi
 
 In addition, *Beanbag* packages should include the following bag metadata.
 
-    Beanbag-version: <version-number>
+    BagIt-Profile-Identifier: <URL to profile>
 
-Where `version-number` should match the version of the *Beanbag* profile used by
-the package.
+Where the profile conforms to the proposed profile spec [Bagit-Profile]
+
 
 #### Optional metadata
 
@@ -169,5 +169,6 @@ It has suggested that we may want to track origional URL for files that are incl
 
 
 [BagIt]: https://tools.ietf.org/html/draft-kunze-bagit-11 "The BagIt File Packaging Format (V0.97)"
+[BagIt-Profile]: https://github.com/ruebot/bagit-profiles
 [RFC 1738]: http://www.ietf.org/rfc/rfc1738.txt "RFC 1738"
 [RFC 4180]: http://www.ietf.org/rfc/rfc4180.txt "RFC 4180"
