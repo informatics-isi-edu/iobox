@@ -12,15 +12,11 @@
       },
       "Internal-Sender-Identifier":{
         "required":true,
-      }
-      "Source-Organization":{
-         "required":optional,
+        "values":
       },
-      "Contact-Phone":{
-         "required":false
-      }
       "Lineage":{
         "required":false
+        "values":[ANYURL]
    },
    "Manifests-Required":[
       "md5"
