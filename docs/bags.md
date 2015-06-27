@@ -66,12 +66,13 @@ profile.
 
     Bagging-Date  Date (YYYY-MM-DD) that the content was prepared for delivery.
 
-    Internal-Sender-Identifier  An alternate sender-specific identifier for the content and/or bag.  This value should be a GUID in URI format. The name does not have to be resolvable.
+    Internal-Sender-Identifier URI
     
-*COMMENT: The Internal-Sender-Identifer should be modeled after the URI-A specification in the OAI specfication. WHen the bag is holding and OAI aggregate, the Internal-Sender-Identifier should be the URI-A.
+An alternate sender-specific identifier for the content and/or bag.  This value should be a GUID in URI format. The name does not have to be resolvable.
+    
+COMMENT: The Internal-Sender-Identifer should be modeled after the URI-A specification in the OAI specfication. WHen the bag is holding and OAI aggregate, the Internal-Sender-Identifier should be the URI-A.
 
 > A URI-A MUST be a protocol-based URI. However, an Aggregation is a conceptual construct, and thus it does not have a Representation. In contrast, a Resource Map that asserts the Aggregation does have a Representation in which  that assertion is made available to clients and agents. The Cool URIs for the Semantic Web guidlines are adopted to support discovery of the HTTP URI of the asserting Resource Map given the HTTP URI of an Aggregation. Details about the mechanisms of access are described in ORE User Guide - HTTP Implementation.
-*
 
 In addition, *Beanbag* packages should include the following bag metadata.
 
@@ -82,7 +83,7 @@ the package.
 
 #### Optional metadata
 
-    Lineage: URI
+    Lineage URI
     
 The value of this attribute is the Internal-Sender-Identifier of any bags from which the data in the current bag was derived.  This should corrispond to the lineage realationship in OAI.  TODO: Need to specifify behavoir of multiplie items, a list or set?
 
