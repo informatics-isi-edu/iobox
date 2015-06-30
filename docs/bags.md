@@ -156,7 +156,7 @@ follows.
 }
 ```
 
-Where `column.type` may be:
+Where column `type` may be:
 * `text`: `UTF-8` encoded text data type
 * `integer`: a tbd integer data type
 * `decimal`: a tbd floating point data type
@@ -167,12 +167,20 @@ Where `column.type` may be:
 In the example, the schema named `foo` maps to the directory `data/foo` and its
 table `bar.csv` maps to the file named `data/foo/bar.csv`. From the example,
 `bar.csv` should include a header row with a column named `a` which
-contains `integer` values within the `TBD` numeric value range. Following the description of columns, `keys` contains a list of tuples, each of which specify a set of columns that may be treated as a key for the rows of the table.
+contains `integer` values within the `TBD` numeric value range. Following the
+description of columns, `keys` contains a list of tuples, each of which specify
+a set of columns that may be treated as a key for the rows of the table.
 
 Considerations:
-1. There are ontologies for spreadsheets, databases, and CSV files. Should we use one? None are widely adopted.
-2. We probably want to be precise about the numerics, like int8 for 8 byte integer.
-3. Should all `object` type columns be relative URLs or can they be absolute? Shouldn't they be relative and require that the object be included in the manifest? Then the fetch.txt file can specify an external (i.e., absolute) URL to get the remote file contents.
+
+1. There are ontologies for spreadsheets, databases, and CSV files. Should we
+   use one? None are widely adopted.
+2. We probably want to be precise about the numerics, like int8 for 8 byte
+   integer.
+3. Should all `object` type columns be relative URLs or can they be absolute?
+   Shouldn't they be relative and require that the object be included in the
+   manifest? Then the fetch.txt file can specify an external (i.e., absolute)
+   URL to get the remote file contents.
 
 # Notes
 
