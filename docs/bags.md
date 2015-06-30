@@ -64,12 +64,12 @@ profile.
 
 *BagIt* allows for optional bag metadata in the `bag-info.txt` tag file.  This file must be included in a *Beanbag* bag.  The following standard metadata tags are required.
 
-    Bagging-Date  Date (YYYY-MM-DD) that the content was prepared for delivery.
+    Bagging-Date: ISO 8601 Date
 
-    Internal-Sender-Identifier URI
-    
+    Internal-Sender-Identifier: URI
+
 An alternate sender-specific identifier for the content and/or bag.  This value should be a GUID in URI format. The name does not have to be resolvable as it is possible for a bag to never exist as a information resource.
-    
+
 COMMENT: The Internal-Sender-Identifer should be modeled after the URI-A specification in the OAI specfication. WHen the bag is holding an OAI aggregate, the Internal-Sender-Identifier should be the URI-A.
 
 > A URI-A MUST be a protocol-based URI. However, an Aggregation is a conceptual construct, and thus it does not have a Representation. In contrast, a Resource Map that asserts the Aggregation does have a Representation in which  that assertion is made available to clients and agents. The Cool URIs for the Semantic Web guidlines are adopted to support discovery of the HTTP URI of the asserting Resource Map given the HTTP URI of an Aggregation. Details about the mechanisms of access are described in ORE User Guide - HTTP Implementation.
@@ -84,7 +84,7 @@ Where the profile conforms to the proposed profile spec [Bagit-Profile]
 #### Optional metadata
 
     Lineage URI
-    
+
 The value of this attribute is the Internal-Sender-Identifier of any bags from which the data in the current bag was derived.  This should corrispond to the lineage realationship in OAI.  TODO: Need to specifify behavoir of multiplie items, a list or set?
 
 ### Tag Manifest: `tagmanifest-<algorithm>.txt`
@@ -140,24 +140,39 @@ follows.
 
 ```javascript
 { "schemas": [
-  { "name": "foo" }
-    "tables": [
-      { "name": "bar.csv",
-         "columns": [
-           { "name": "a_column",
-             "type": "int64" },
+    { "name": "foo",
+      "tables": [
+        { "name": "bar.csv",
+          "columns": [
+            { "name": "a",
+              "type": "integer" },
               ...
-      ]},
-      ...
-  ]},
-  ...
-]}
+          ],
+          "keys": [ {"a", ...}, ... ],
+        }, ...
+      ],
+    }, ...
+  ]
+}
 ```
+
+Where `column.type` may be:
+* `text`: `UTF-8` encoded text data type
+* `integer`: a tbd integer data type
+* `decimal`: a tbd floating point data type
+* `URL`: a URL data type
+* `date`: a tbd date-time data type
+* `object`: a URL-encoded reference to an object in the manifest
 
 In the example, the schema named `foo` maps to the directory `data/foo` and its
 table `bar.csv` maps to the file named `data/foo/bar.csv`. From the example,
-`bar.csv` should include a header row with a column named `a_column` which
-contains UTF-8 encoded values within the `int64` numeric value range.
+`bar.csv` should include a header row with a column named `a` which
+contains `integer` values within the `TBD` numeric value range. Following the description of columns, `keys` contains a list of tuples, each of which specify a set of columns that may be treated as a key for the rows of the table.
+
+Considerations:
+1. There are ontologies for spreadsheets, databases, and CSV files. Should we use one? None are widely adopted.
+2. We probably want to be precise about the numerics, like int8 for 8 byte integer.
+3. Should all `object` type columns be relative URLs or can they be absolute? Shouldn't they be relative and require that the object be included in the manifest? Then the fetch.txt file can specify an external (i.e., absolute) URL to get the remote file contents.
 
 # Notes
 
@@ -172,3 +187,4 @@ It has suggested that we may want to track origional URL for files that are incl
 [BagIt-Profile]: https://github.com/ruebot/bagit-profiles
 [RFC 1738]: http://www.ietf.org/rfc/rfc1738.txt "RFC 1738"
 [RFC 4180]: http://www.ietf.org/rfc/rfc4180.txt "RFC 4180"
+[ISO 8601]: http://www.iso.org/iso/catalogue_detail?csnumber=40874
