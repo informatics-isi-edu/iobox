@@ -74,6 +74,12 @@ COMMENT: The Internal-Sender-Identifer should be modeled after the URI-A specifi
 
 > A URI-A MUST be a protocol-based URI. However, an Aggregation is a conceptual construct, and thus it does not have a Representation. In contrast, a Resource Map that asserts the Aggregation does have a Representation in which  that assertion is made available to clients and agents. The Cool URIs for the Semantic Web guidlines are adopted to support discovery of the HTTP URI of the asserting Resource Map given the HTTP URI of an Aggregation. Details about the mechanisms of access are described in ORE User Guide - HTTP Implementation.
 
+COMMENT: This needs further review. There should be a bag identifier. The
+identifier should be a URI. The identifier should be unique. The identifier,
+if it is a URI, can use any scheme (http, gsiftp, torrect, etc.). It is a good
+practice to make the identifier dereferencable and accessible but it can be any
+type including those that are not dereferenceable (e.g., guid:<GUID>).
+
 In addition, *Beanbag* packages should include the following bag metadata.
 
     BagIt-Profile-Identifier: <URL to profile>
