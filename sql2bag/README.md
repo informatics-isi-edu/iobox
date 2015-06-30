@@ -1,5 +1,5 @@
-The `mssql2bb` utility goes here. It connects to MS SQL, executes SQL selects, 
-and makes a Beanbag package.
+The `sql2bag` utility goes here. It connects to a Relational DataBase Server, 
+executes SQL selects, and makes a Beanbag package.
 
 ## Installation
 

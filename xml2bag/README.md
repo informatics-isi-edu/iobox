@@ -1,4 +1,5 @@
-The `xml2bb` utility goes here. It reads XML files and produces a Beanbag package.
+The `xml2bag` utility goes here. It reads XML files and produces a Beanbag 
+package.
 
 ## Installation
 
