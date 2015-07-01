@@ -1,0 +1,30 @@
+SELECT TOP 3300 
+A.ID,
+A.Name,
+Target,
+Organism,
+Mutations,
+Insertion,
+Truncations,
+Host,
+Strain,
+Vector,
+TagNterm,
+TagCterm,
+CleavageSite,
+MicroscreenScore,
+MicroscreenComments,
+Comments,
+DateRegistered,
+ExptMWNum,
+ExptNucSeq,
+ExptAASeq,
+Status,
+ParentID,
+IsDisabled,
+Updated,
+B.ID AS  TARGET_ID,
+B.Name AS TARGET_NAME
+    FROM dbo.Construct A 
+            JOIN dbo.Target B ON (A.target=B.id);
+
