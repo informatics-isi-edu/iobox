@@ -1,0 +1,11 @@
+#!/usr/bin/python
+#
+# Copyright 2015 University of Southern California
+# Distributed under Apache License, Version 2.0. See LICENSE for more info.
+#
+
+import sys
+import sql2bag.sql2bag
+
+if __name__ == '__main__':
+    sys.exit(sql2bag.sql2bag.main(sys.argv))

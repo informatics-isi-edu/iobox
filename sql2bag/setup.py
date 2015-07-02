@@ -11,8 +11,9 @@ setup(
     description="converts from SQL to CSV by querying a database through an ODBC connection",
     version="0.1-prerelease",
     packages=["sql2bag"],
+    scripts=["bin/sql2bag"],
     package_dir={'sql2bag': 'sql2bag'},
-    package_data={'sql2bag': ['example_files/*.*']},
+    package_data={'sql2bag': ['example_data/*.*']},
     requires=["pyodbc", "csv", "os", "sys", "datetime", "json", "bagit"],
     maintainer_email="support@misd.isi.edu",
     license='Apache 2.0',
@@ -25,3 +26,4 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
     ])
+
