@@ -1,0 +1,4 @@
+recursive-include sql2bag/data *
+setup.py
+sql2bag/__init__.py
+sql2bag/sql2bag.py

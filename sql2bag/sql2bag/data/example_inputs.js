@@ -3,8 +3,10 @@
     "DNS": "gpcr",
     "DATABASE_NAME":"rce",
     "USER_NAME":"sa",
-    "CSV_TARGET_DIRECTORY":"data",
+    "DB_PASSWORD":"*********",
     "DESTINATION_SERVER_NAME":"vm-dev-029.misd.isi.edu",
+    "DESTINATION_USER_NAME":"gpcr1",
+    "DESTINATION_PASSWORD":"********",
     "EXTRACTS": [
          { "query_file" : "example_files/example_query_construct.sql",
 	   "schema_name": "gpcr",
