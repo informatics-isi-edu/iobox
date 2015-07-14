@@ -67,7 +67,7 @@ def write_csv(cursor,csv_file):
     header = []
     for colinfo in cursor.description:
         colname = colinfo[0]
-        header.append(colname)
+        header.append(colname.lower())
 
     if not os.path.exists(os.path.dirname(csv_file)):
         os.makedirs(os.path.dirname(csv_file))
@@ -100,7 +100,10 @@ def write_manifest(inputs_js,col_defs):
 
     manifest['extracts']=extracts
     manifest['source']=inputs_js['SERVER_NAME']
-    manifest['destination']='ERMREST in vm-deb-028.misd.isi.edu'
+    manifest['destination']=inputs_js['DESTINATION_SERVER_NAME']
+    manifest['destination_user_name']=inputs_js['DESTINATION_USER_NAME']
+    manifest['destination_password']=inputs_js['DESTINATION_PASSWORD']
+
     return manifest
 
 
@@ -170,10 +173,8 @@ input_file.js example:
     ]
 }
 
-1) Must set environment variable DBPASSWORD with corresponding authentication password for the user "db_username" in database "DB_NAME". 
-   E.g., export DBPASSWORD='**********'
-2) DNS is the Data Source Name used in the ODBC connector. 
-3) Each query_file must contain a properly writen query in SQL.
+1) DNS is the Data Source Name used in the ODBC connector. 
+2) Each query_file must contain a properly writen query in SQL.
 
 """)
         sys.exit(1)
@@ -184,7 +185,7 @@ input_file.js example:
     host = inputs_js['DNS']
     database = inputs_js['DATABASE_NAME']
     user = inputs_js['USER_NAME']
-    password = os.environ['DBPASSWORD']
+    password = inputs_js['DB_PASSWORD']
 
     col_defs={}
     for extract in inputs_js['EXTRACTS']:

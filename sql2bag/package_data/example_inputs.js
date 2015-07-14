@@ -4,6 +4,7 @@
     "DATABASE_NAME":"rce",
     "USER_NAME":"sa",
     "CSV_TARGET_DIRECTORY":"data",
+    "DESTINATION_SERVER_NAME":"vm-dev-029.misd.isi.edu",
     "EXTRACTS": [
          { "query_file" : "example_files/example_query_construct.sql",
 	   "schema_name": "gpcr",
