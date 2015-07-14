@@ -46,8 +46,7 @@ def load_bag_csv(bag_path):
 
         for path,fixity in bag.entries.items():
             if os.path.splitext(path)[1].lower() == '.csv':
-                if  re.search('Target',path):
-                    put_csv_file(inputs,bag_path+'/'+path,base_url,cjar)
+                put_csv_file(inputs,bag_path+'/'+path,base_url,cjar)
 
     except bagit.BagValidationError as e:
         print "BagValidationError:", e
