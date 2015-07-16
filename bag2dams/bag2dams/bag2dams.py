@@ -13,6 +13,10 @@ import os.path
 import bagit
 import json
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning 
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 
 PATH_SEP=os.path.sep
 SQL2BAG_MANIFEST='sql2csv_manifest.js'
@@ -28,7 +32,7 @@ def load_bag_csv(bag_path):
 
     try:
         bag.validate()        
-        sys.stdout.write('----- Bag [%s] is valid----\n' % bag_path)    
+        sys.stdout.write('=== Bag [%s] is valid \n' % bag_path)
 
         #for path, fixity in bag.entries.items():
         #    print "path:%s md5:%s" % (path, fixity["md5"])
@@ -38,15 +42,13 @@ def load_bag_csv(bag_path):
         #url = 'https://vm-dev-029.misd.isi.edu/ermrest/catalog/1/entity/bag_test:target'
         base_url='https://'+inputs['destination']+'/ermrest/catalog/1/entity'
 
-        print "Base URL=%s" % base_url 
-
         udata={'username':inputs['destination_user_name'],'password':inputs['destination_password']}
 
         cjar = open_session(udata)
 
         for path,fixity in bag.entries.items():
             if os.path.splitext(path)[1].lower() == '.csv':
-                put_csv_file(inputs,bag_path+'/'+path,base_url,cjar)
+                put_csv_file(inputs,bag_path+PATH_SEP+path,base_url,cjar)
 
     except bagit.BagValidationError as e:
         print "BagValidationError:", e
@@ -79,7 +81,7 @@ def open_session(user_data):
                         rest={'HttpOnly': None}, 
                         rfc2109=False)
 
-    print r.status_code
+    sys.stdout.write('=== Open Session Status Code=%s\n' % r.status_code)
     cj.set_cookie(c)
     return cj
 
@@ -89,9 +91,9 @@ def open_session(user_data):
 # file_fn is the full name of the file relative to the bag. I.e.: bag_path/data/schema_name/file_name.csv
 def put_csv_file(inputs,file_fn,base_url,cookiejar):
 
-    sys.stdout.write('Full File Name=%s \n' % os.path.abspath(file_fn))
+    sys.stdout.write('=== Full File Name=%s \n' % os.path.abspath(file_fn))
 
-    fn = re.findall('data/[^/]+/[^/]+.csv$',file_fn,flags=re.IGNORECASE)
+    fn = re.findall('data/[^/]+/[^/]+.csv$',file_fn.replace('\\','/'),flags=re.IGNORECASE)
  
     if len(fn)>0:   
         fn2 = re.split('/',os.path.splitext(fn[0])[0])
@@ -108,7 +110,7 @@ def put_csv_file(inputs,file_fn,base_url,cookiejar):
 
         with open (fname,'rb') as data_file:
             url = base_url+'/'+schema_name+':'+file_name
-            print url
+            sys.stdout.write('=== url: %s\n' % url)
             headers = {'content-type': 'text/csv'}
             r = requests.put(url, data=data_file, headers=headers,verify=False,cookies=cookiejar)
             print r.status_code
