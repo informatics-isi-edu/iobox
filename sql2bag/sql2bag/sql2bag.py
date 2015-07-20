@@ -139,7 +139,66 @@ def write_schema(inputs_js,col_defs):
 
 
 def csv_filename(extract):
-    return  extract['schema_name']+PATH_SEP+extract['table_name']+'.csv'
+    #return  extract['schema_name']+PATH_SEP+extract['table_name']+'.csv'
+    return   os.path.join(extract['schema_name'],extract['table_name']+'.csv')
+
+
+def create_bag(inputs_js,bag_dir): 
+    host = inputs_js['DNS']
+    database = inputs_js['DATABASE_NAME']
+    user = inputs_js['USER_NAME']
+    password = inputs_js['DB_PASSWORD']
+
+    col_defs={}
+    for extract in inputs_js['EXTRACTS']:
+        sql_file=extract['query_file']
+        csv_file = csv_filename(extract)
+
+        conn = pyodbc.connect(dsn=host, database=database, user=user, password=password,charset='UTF8')    
+        cursor = conn.cursor()
+        sql = read_query(sql_file)
+        cursor.execute(sql)
+  
+        col_types=[]  
+        for colinfo in cursor.description:
+            dd={}
+            dd['type']=csvescape(py_dic[colinfo[1]])
+            dd['name']=csvescape(colinfo[0])
+            col_types.append(dd)
+
+        col_defs[csv_file]=col_types
+        #csv_file_rel=bag_dir+PATH_SEP+csv_file
+        csv_file_rel=os.path.join(bag_dir,csv_file)
+        write_csv(cursor,csv_file_rel)
+
+    schema_file=write_schema(inputs_js,col_defs)
+
+    #with open(bag_dir+PATH_SEP+'schemas.js', 'w') as f:
+    with open(os.path.join(bag_dir,'schemas.js'), 'w') as f:
+        json.dump(schema_file, f,indent=3,encoding="utf-8",sort_keys=True)
+
+    manifest=write_manifest(inputs_js,col_defs)
+ 
+    with open(os.path.join(bag_dir,'sql2csv_manifest.js'), 'w') as f:
+        json.dump(manifest, f,indent=3,encoding="utf-8")
+
+    bag = bagit.make_bag(bag_dir,{'Contact-Name': 'Alejandro Bugacov'})
+
+    try:
+        bag.validate()        
+        sys.stdout.write('[sql2bag] Created valid data bag: %s \n' % bag_dir )
+                
+    except bagit.BagValidationError as e:
+        print "BagValidationError:", e
+        for d in e.details:
+            if isinstance(d, bag.ChecksumMismatch):
+                print "expected %s to have %s checksum of %s but found %s" % (e.path, e.algorithm, e.expected, e.found)
+    except:
+        print "Unexpected error in Validating Bag:", sys.exc_info()[0]
+        raise
+
+
+    return bag
 
         
 def main(argv):
@@ -180,47 +239,9 @@ input_file.js example:
         sys.exit(1)
 
     inputs_js=read_json(argv[1])
-    BAG_DIR=argv[2]
+    bag_path=argv[2]
+    bag = create_bag(inputs_js,bag_path) 
 
-    host = inputs_js['DNS']
-    database = inputs_js['DATABASE_NAME']
-    user = inputs_js['USER_NAME']
-    password = inputs_js['DB_PASSWORD']
-
-    col_defs={}
-    for extract in inputs_js['EXTRACTS']:
-        sql_file=extract['query_file']
-        csv_file = csv_filename(extract)
-
-        conn = pyodbc.connect(dsn=host, database=database, user=user, password=password,charset='UTF8')    
-        cursor = conn.cursor()
-        sql = read_query(sql_file)
-        cursor.execute(sql)
-  
-        col_types=[]  
-        for colinfo in cursor.description:
-            dd={}
-            dd['type']=csvescape(py_dic[colinfo[1]])
-            dd['name']=csvescape(colinfo[0])
-            col_types.append(dd)
-
-        col_defs[csv_file]=col_types
-        csv_file_rel=BAG_DIR+PATH_SEP+csv_file
-        write_csv(cursor,csv_file_rel)
-
-    schema_file=write_schema(inputs_js,col_defs)
-
-
-    with open(BAG_DIR+PATH_SEP+'schemas.js', 'w') as f:
-        json.dump(schema_file, f,indent=3,encoding="utf-8",sort_keys=True)
-
-    manifest=write_manifest(inputs_js,col_defs)
- 
-    with open(BAG_DIR+PATH_SEP+'sql2csv_manifest.js', 'w') as f:
-        json.dump(manifest, f,indent=3,encoding="utf-8")
-
-
-    bag = bagit.make_bag(BAG_DIR,{'Contact-Name': 'Alejandro Bugacov'})
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
