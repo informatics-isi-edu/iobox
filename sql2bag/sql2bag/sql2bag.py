@@ -6,7 +6,7 @@ import csv
 import sys
 import datetime
 import json
-
+import shutil 
 import bagit
 
 
@@ -32,7 +32,9 @@ def val2text(v):
     if v is None:
         return ''
     elif type(v) == datetime.datetime:
-        return v.isoformat(' ')
+        return v.isoformat()
+    elif type(v) == datetime.date:
+        return v.isoformat()
     elif type(v) in [int, float, str]:
         return '%s' % str(v)
     elif type(v) == buffer:
@@ -72,7 +74,7 @@ def write_csv(cursor,csv_file):
     if not os.path.exists(os.path.dirname(csv_file)):
         os.makedirs(os.path.dirname(csv_file))
 
-    with open(csv_file,'w') as f:
+    with open(csv_file,'wb') as f:
         writer = csv.writer(f)
         writer.writerow(header)
 
@@ -80,7 +82,7 @@ def write_csv(cursor,csv_file):
         values = []
         for i in range(0, len(row)):
             values.append(val2text(row[i]).encode("utf-8"))
-        with open(csv_file,'a') as f:
+        with open(csv_file,'ab') as f:
             writer = csv.writer(f)
             writer.writerow(values)
 
@@ -149,6 +151,12 @@ def create_bag(inputs_js,bag_dir):
     user = inputs_js['USER_NAME']
     password = inputs_js['DB_PASSWORD']
 
+    
+
+    if os.path.exists(bag_dir):
+        print "Passed bag directory [%s] already exists....deleting it...." % bag_dir
+        shutil.rmtree(bag_dir)
+
     col_defs={}
     for extract in inputs_js['EXTRACTS']:
         sql_file=extract['query_file']
@@ -174,12 +182,12 @@ def create_bag(inputs_js,bag_dir):
     schema_file=write_schema(inputs_js,col_defs)
 
     #with open(bag_dir+PATH_SEP+'schemas.js', 'w') as f:
-    with open(os.path.join(bag_dir,'schemas.js'), 'w') as f:
+    with open(os.path.join(bag_dir,'schemas.js'), 'wb') as f:
         json.dump(schema_file, f,indent=3,encoding="utf-8",sort_keys=True)
 
     manifest=write_manifest(inputs_js,col_defs)
  
-    with open(os.path.join(bag_dir,'sql2csv_manifest.js'), 'w') as f:
+    with open(os.path.join(bag_dir,'sql2csv_manifest.js'), 'wb') as f:
         json.dump(manifest, f,indent=3,encoding="utf-8")
 
     bag = bagit.make_bag(bag_dir,{'Contact-Name': 'Alejandro Bugacov'})
@@ -208,7 +216,8 @@ def main(argv):
 usage: python sql2bag.py <input_file.js> <bag_name>
 
 <input_file.js>: reads input from <input_file.js> file. See below for format example. 
-<bag_name>: creates a bag under bagit specifications under the location passed as <bag_name>
+<bag_name>: creates a bag under bagit specifications under the location passed as <bag_name> 
+            (if the directory <bag_name> already exists it deletes it and creates a new one)
  
 input_file.js example:
 {
