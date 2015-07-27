@@ -1,0 +1,126 @@
+{
+    "SERVER_NAME":"bugacov.isi.edu",
+    "DNS": "gpcr",
+    "DATABASE_NAME":"rce",
+    "USER_NAME":"sa",
+    "DB_PASSWORD":"********",
+    "DESTINATION_SERVER_NAME":"vm-dev-029.misd.isi.edu",
+    "DESTINATION_USER_NAME":"gpcr1",
+    "DESTINATION_PASSWORD":"********",
+    "EXTRACTS": [
+         { "query_file" : "gpcr_example/CleavageSite.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "cleavagesite",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Host.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "host",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Insertion.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "insertion",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Mutations.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "mutations",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Organism.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "organism",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Status.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "status",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Strain.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "strain",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/TagCterm.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "tagcterm",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/TagNterm.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "tagnterm",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Target.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "target",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Truncations.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "truncations",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/UserList.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "userlist",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Vector.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "vector",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/Construct.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "construct",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/VirusProduction.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "virusproduction",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/BiomassProdBatch.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "biomassprodbatch",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/MembranePrep.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "membraneprep",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_example/ParentsOfMembranePreps.sql",
+	   "schema_name": "legacy",
+	   "table_name" : "parentsofmembranepreps",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 }
+    ]
+}
+
+
+
+
+
+
