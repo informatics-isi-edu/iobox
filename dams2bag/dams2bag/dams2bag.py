@@ -55,24 +55,33 @@ def open_session(host, user_data):
     return cj
 
 
-def get_csv_file(query_url, output_path, cookie_jar):
-    if len(output_path) > 0:
-        data_file = None
+def get_file(query_url, output_path, output_format, cookie_jar):
+    if output_path:
         try:
-            data_file = open(output_path, 'wb')
-            headers = {'content-type': 'text/csv', 'accept': 'text/csv'}
+            if not output_format:
+                output_format = 'csv'
+            if output_format == 'csv':
+                headers = {'content-type': 'text/csv', 'accept': 'text/csv'}
+                output_path = ''.join([output_path, '.csv'])
+            elif output_format == 'json':
+                headers = {'content-type': 'application/json', 'accept': 'application/json'}
+                output_path = ''.join([output_path, '.json'])
+
             r = requests.get(query_url, headers=headers, stream=True, verify=False, cookies=cookie_jar)
-            for chunk in r.iter_content(CHUNK_SIZE):
-                data_file.write(chunk)
-            data_file.flush()
             if r.status_code != 200:
-                sys.stdout.write('Query Failed url: %s\n' % query_url)
+                sys.stdout.write('Query Failed for url: %s\n' % query_url)
                 sys.stdout.write('Transfer Failed for file [%s]. Status code: %s %s \n\n' %
                                  (output_path, r.status_code, r.text))
+                sys.exit(1)
             else:
                 sys.stdout.write('File [%s] transfer successful. Status code: %s \n' % (output_path, r.status_code))
-        finally:
-            data_file.close()
+                data_file = open(output_path, 'wb')
+                for chunk in r.iter_content(CHUNK_SIZE):
+                    data_file.write(chunk)
+                data_file.flush()
+                data_file.close()
+        except requests.exceptions.RequestException as e:
+            sys.stdout.write('HTTP Request Exception: %s %s \n' % (e.errno, e.message))
 
 
 def create_bag(config):
@@ -99,8 +108,9 @@ def create_bag(config):
     for query in config['QUERIES']:
         query_url = ''.join([host, base_path, query['query_path']])
         output_file = query['output_file']
+        output_format = query['output_format']
         output_path = os.path.abspath(''.join([bag_path, os.path.sep, output_file]))
-        get_csv_file(query_url, output_path, cookie_jar)
+        get_file(query_url, output_path, output_format, cookie_jar)
 
     bag = bagit.make_bag(bag_path, {'Contact-Name': contact})
 
