@@ -55,18 +55,9 @@ def open_session(host, user_data):
     return cj
 
 
-def get_file(query_url, output_path, output_format, cookie_jar):
+def get_file(query_url, output_path, headers, cookie_jar):
     if output_path:
         try:
-            if not output_format:
-                output_format = 'csv'
-            if output_format == 'csv':
-                headers = {'content-type': 'text/csv', 'accept': 'text/csv'}
-                output_path = ''.join([output_path, '.csv'])
-            elif output_format == 'json':
-                headers = {'content-type': 'application/json', 'accept': 'application/json'}
-                output_path = ''.join([output_path, '.json'])
-
             r = requests.get(query_url, headers=headers, stream=True, verify=False, cookies=cookie_jar)
             if r.status_code != 200:
                 sys.stdout.write('Query Failed for url: %s\n' % query_url)
@@ -108,9 +99,13 @@ def create_bag(config):
     for query in config['QUERIES']:
         query_url = ''.join([host, base_path, query['query_path']])
         output_file = query['output_file']
-        output_format = query['output_format']
-        output_path = os.path.abspath(''.join([bag_path, os.path.sep, output_file]))
-        get_file(query_url, output_path, output_format, cookie_jar)
+        output_format = query.get('output_format', 'csv')
+        headers = {'accept': 'text/csv'}
+        if output_format == 'json':
+            headers = {'accept': 'application/json'}
+        output_path = os.path.abspath(''.join([bag_path, os.path.sep, output_file, '.', output_format]))
+
+        get_file(query_url, output_path, headers, cookie_jar)
 
     bag = bagit.make_bag(bag_path, {'Contact-Name': contact})
 

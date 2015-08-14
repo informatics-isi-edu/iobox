@@ -13,8 +13,7 @@
         "output_format": "csv"
       },
       {
-        "attr_query_path" : "/attribute/P:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/S:=SUBJECT_FILES/F:=FILES/$P/F:uri,F:bytes,F:content_type",
-        "query_path" : "/entity/P:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/SUBJECT_FILES/FILES",
+        "query_path" : "/attribute/P:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/S:=SUBJECT_FILES/F:=FILES/P:PATNO,F:uri,F:bytes,F:content_type",
 	    "output_file": "FILES",
         "output_format": "csv"
 	  }
