@@ -1,6 +1,6 @@
 The `dams2bag` utility goes here. It authenticates to an ERMrest store, makes 
 one or more entity GET request with arbitrary filter expressions, and produces
-a Beanbag package.
+a BagIt package.
 
 ## Installation
 
