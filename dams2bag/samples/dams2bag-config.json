@@ -8,14 +8,14 @@
     "QUERIES":
     [
       {
-        "query_path" : "/entity/PPMI:PATIENT/ENROLL_STATUS=Enrolled",
-	    "output_file": "PATIENT",
+        "query_path" : "/entity/PPMI:PATIENT/PATNO=3000",
+	    "output_name": "PATIENT",
         "output_format": "csv"
       },
       {
-        "query_path" : "/attribute/P:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/S:=SUBJECT_FILES/F:=FILES/P:PATNO,F:uri,F:bytes,F:content_type",
-	    "output_file": "FILES",
-        "output_format": "csv"
+        "query_path" : "/attribute/P:=PPMI:PATIENT/PATNO=3000/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+	    "output_name": "IMAGES",
+        "output_format": "fetch"
 	  }
     ]
 }
