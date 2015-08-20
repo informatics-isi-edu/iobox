@@ -149,7 +149,7 @@ def create_bag(config):
                 writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
                 writer.writeheader()
                 for row in reader:
-                    row['FILENAME'] = ''.join([output_name, '/', row['FILENAME']])
+                    row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
                     writer.writerow(row)
                 csv_in.close()
                 csv_out.close()
