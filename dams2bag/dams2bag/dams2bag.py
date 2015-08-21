@@ -6,6 +6,7 @@ import urlparse
 import requests
 import csv
 import bagit
+import ordereddict
 import simplejson as json
 
 CHUNK_SIZE = 1024 * 1024
@@ -18,7 +19,7 @@ def cleanup_bag(bag_path):
 
 def read_config(input_file):
     config = open(input_file).read()
-    return json.loads(config)
+    return json.loads(config, object_pairs_hook=ordereddict.OrderedDict)
 
 
 def open_session(host, user_data):
@@ -76,12 +77,14 @@ def get_file(url, output_path, headers, cookie_jar):
 
 
 def create_bag(config):
-    bag_path = config['BAG_PATH']
-    contact = config['CONTACT_NAME']
-    host = config['HOST']
-    base_path = config['BASE_PATH']
-    username = config['USER_NAME']
-    password = config['PASSWORD']
+    bag_config = config['bag']
+    bag_path = bag_config['bag_path']
+    bag_metadata = bag_config['bag_metadata']
+    catalog_config = config['catalog']
+    host = catalog_config['host']
+    path = catalog_config['path']
+    username = catalog_config['username']
+    password = catalog_config['password']
 
     print "Creating bag: %s" % bag_path
 
@@ -90,15 +93,15 @@ def create_bag(config):
         shutil.rmtree(bag_path)
 
     os.makedirs(bag_path)
-    bag = bagit.make_bag(bag_path, {'Contact-Name': contact})
+    bag = bagit.make_bag(bag_path, bag_metadata)
 
     if username and password:
         cookie_jar = open_session(host, {'username': username, 'password': password})
     else:
         cookie_jar = None
 
-    for query in config['QUERIES']:
-        url = ''.join([host, base_path, query['query_path']])
+    for query in catalog_config['queries']:
+        url = ''.join([host, path, query['query_path']])
         output_name = query['output_name']
         output_format = query['output_format']
         if output_format == 'csv':

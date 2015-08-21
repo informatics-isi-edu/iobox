@@ -1,21 +1,32 @@
 {
-    "BAG_PATH":"../temp/dams2bag-test",
-    "CONTACT_NAME":"dams2bag test configuration",
-    "HOST":"https://misd-vm-12.isi.edu",
-    "BASE_PATH":"/ermrest/catalog/1",
-    "USER_NAME":"",
-    "PASSWORD":"",
-    "QUERIES":
+  "bag":
+  {
+    "bag_path": "../temp/dams2bag-test",
+    "bag_metadata":
+    {
+      "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
+      "Contact-Name": "dams2bag test configuration",
+      "External-Description": "A bag created by the dams2bag utility containing test data"
+    }
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "",
+    "password": "",
+    "queries":
     [
       {
-        "query_path" : "/entity/PPMI:PATIENT/PATNO=3000",
+        "query_path": "/entity/PPMI:PATIENT/PATNO=3000",
         "output_name": "PATIENT",
         "output_format": "csv"
       },
       {
-        "query_path" : "/attribute/P:=PPMI:PATIENT/PATNO=3000/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3000/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
         "output_name": "IMAGES",
         "output_format": "fetch"
-	  }
+      }
     ]
+  }
 }
