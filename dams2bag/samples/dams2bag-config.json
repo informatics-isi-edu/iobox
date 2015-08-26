@@ -15,7 +15,7 @@
     "host": "https://misd-vm-12.isi.edu",
     "path": "/ermrest/catalog/1",
     "username": "",
-    "password": "!",
+    "password": "",
     "queries":
     [
       {
