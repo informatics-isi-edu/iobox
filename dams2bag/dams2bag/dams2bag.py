@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sys
 import cookielib
 import shutil
@@ -14,6 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 def cleanup_bag(bag_path):
+    print "Cleaning up bag: %s" % bag_path
     shutil.rmtree(bag_path)
 
 
@@ -60,10 +63,13 @@ def open_session(host, user_data):
 def get_file(url, output_path, headers, cookie_jar):
     if output_path:
         try:
+            output_dir = os.path.dirname(os.path.abspath(output_path))
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
             r = requests.get(url, headers=headers, stream=True, verify=False, cookies=cookie_jar)
             if r.status_code != 200:
-                print 'GET Failed for url: %s' % url
-                print 'File [%s] transfer failed. Status code: %s %s ' % (output_path, r.status_code, r.text)
+                print 'HTTP GET Failed for url: %s' % url
+                print 'File [%s] transfer failed. Status code: %s Server response: %s ' % (output_path, r.status_code, r.text)
                 sys.exit(1)
             else:
                 data_file = open(output_path, 'wb')
@@ -76,10 +82,11 @@ def get_file(url, output_path, headers, cookie_jar):
             print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
 
 
-def create_bag(config):
+def export_to_bag(config):
     bag_config = config['bag']
-    bag_path = bag_config['bag_path']
-    bag_metadata = bag_config['bag_metadata']
+    bag_path = os.path.abspath(bag_config['bag_path'])
+    bag_archiver = bag_config.get('bag_archiver', None)
+    bag_metadata = bag_config.get('bag_metadata', None)
     catalog_config = config['catalog']
     host = catalog_config['host']
     path = catalog_config['path']
@@ -89,7 +96,7 @@ def create_bag(config):
     print "Creating bag: %s" % bag_path
 
     if os.path.exists(bag_path):
-        print "Specified bag directory [%s] already exists -- it will be deleted" % bag_path
+        print "Specified bag directory already exists -- it will be deleted"
         shutil.rmtree(bag_path)
 
     os.makedirs(bag_path)
@@ -107,17 +114,17 @@ def create_bag(config):
         if output_format == 'csv':
             headers = {'accept': 'text/csv'}
             output_name = ''.join([output_name, '.csv'])
-            output_path = os.path.abspath(''.join([bag_path, os.path.sep, 'data', os.path.sep, output_name]))
+            output_path = os.path.abspath(os.path.join(bag_path, 'data', output_name))
         elif output_format == 'json':
             headers = {'accept': 'application/json'}
             output_name = ''.join([output_name, '.json'])
-            output_path = os.path.abspath(''.join([bag_path,  os.path.sep, 'data', os.path.sep, output_name]))
+            output_path = os.path.abspath(os.path.join(bag_path, 'data', output_name))
         elif output_format == 'prefetch':
             headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(''.join([bag_path, os.path.sep, 'prefetch.txt']))
+            output_path = os.path.abspath(os.path.join(bag_path, 'prefetch.txt'))
         elif output_format == 'fetch':
             headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(''.join([bag_path, os.path.sep, 'fetch.txt']))
+            output_path = os.path.abspath(os.path.join(bag_path, 'fetch.txt'))
         else:
             print "Unsupported output type: %s" % output_format
 
@@ -130,11 +137,8 @@ def create_bag(config):
                 for row in reader:
                     prefetch_url = row['URL']
                     prefetch_length = int(row['LENGTH'])
-                    prefetch_filename = \
-                        os.path.abspath(''.join(
-                            [bag_path, os.path.sep, 'data', os.path.sep, output_name, os.path.sep, row['FILENAME']]))
+                    prefetch_filename = os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
                     print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
-                    os.makedirs(os.path.dirname(prefetch_filename))
                     get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
                     file_bytes = os.path.getsize(prefetch_filename)
                     if prefetch_length != file_bytes:
@@ -169,15 +173,17 @@ def create_bag(config):
     except bagit.BagValidationError as e:
         print "BagValidationError:", e
         for d in e.details:
-            if isinstance(d, bag.ChecksumMismatch):
+            if isinstance(d, bagit.ChecksumMismatch):
                 print "expected %s to have %s checksum of %s but found %s" % (d.path, d.algorithm, d.expected, d.found)
     except:
         print "Unexpected error in Validating Bag:", sys.exc_info()[0]
         raise
 
     try:
-        archive = shutil.make_archive(bag_path, 'zip', bag_path)
-        print 'Created valid data bag archive: %s' % archive
+        if bag_archiver is not None:
+            archive = shutil.make_archive(bag_path, bag_archiver, bag_path)
+            print 'Created data bag archive: %s' % archive
+            cleanup_bag(bag_path)
     except:
         print 'Unexpected error while creating data bag archive: ', sys.exc_info()[0]
         raise
@@ -194,7 +200,7 @@ from the DAMS \n
 """)
         sys.exit(1)
 
-    create_bag(read_config(argv[1]))
+    export_to_bag(read_config(argv[1]))
     sys.exit(0)
 
 

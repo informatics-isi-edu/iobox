@@ -1,0 +1,27 @@
+{
+  "bag":
+  {
+    "bag_path": "../temp/ppmi-brainmorph-sigvec",
+    "bag_metadata":
+    {
+      "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
+      "Contact-Name": "Mike D'Arcy",
+      "External-Description": "PPMI Brain Morphology Signature Vectors"
+    }
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "bdds",
+    "password": "bddsdemo!",
+    "queries":
+    [
+      {
+        "query_path": "/entity/PPMI:BRAINMORPHSIGVEC",
+        "output_name": "PPMI/BRAINMORPHSIGVEC",
+        "output_format": "csv"
+      }
+    ]
+  }
+}
