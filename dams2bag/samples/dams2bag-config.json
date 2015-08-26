@@ -2,6 +2,7 @@
   "bag":
   {
     "bag_path": "../temp/dams2bag-test",
+    "bag_archiver":"zip",
     "bag_metadata":
     {
       "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
@@ -19,13 +20,13 @@
     [
       {
         "query_path": "/entity/PPMI:PATIENT/PATNO=3000",
-        "output_name": "PATIENT",
+        "output_name": "PPMI/PATIENT",
         "output_format": "csv"
       },
       {
         "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3000/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
-        "output_name": "IMAGES",
-        "output_format": "fetch"
+        "output_name": "PPMI/IMAGES",
+        "output_format": "prefetch"
       }
     ]
   }
