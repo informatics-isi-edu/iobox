@@ -69,15 +69,16 @@ def get_file(url, output_path, headers, cookie_jar):
             r = requests.get(url, headers=headers, stream=True, verify=False, cookies=cookie_jar)
             if r.status_code != 200:
                 print 'HTTP GET Failed for url: %s' % url
-                print 'File [%s] transfer failed. Status code: %s Server response: %s ' % (output_path, r.status_code, r.text)
-                sys.exit(1)
+                print "Host %s responded:\n" % urlparse.urlsplit(url).netloc
+                print r.text
+                raise RuntimeError('File [%s] transfer failed. ' % output_path)
             else:
                 data_file = open(output_path, 'wb')
                 for chunk in r.iter_content(CHUNK_SIZE):
                     data_file.write(chunk)
                 data_file.flush()
                 data_file.close()
-                print 'File [%s] transfer successful. Status code: %s' % (output_path, r.status_code)
+                print 'File [%s] transfer successful.' % output_path
         except requests.exceptions.RequestException as e:
             print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
 
@@ -111,6 +112,9 @@ def export_to_bag(config):
         url = ''.join([host, path, query['query_path']])
         output_name = query['output_name']
         output_format = query['output_format']
+        schema_path = query.get('schema_path', None)
+        schema_output_path = os.path.abspath(os.path.join(bag_path, 'data', ''.join([output_name, '-schema.json'])))
+
         if output_format == 'csv':
             headers = {'accept': 'text/csv'}
             output_name = ''.join([output_name, '.csv'])
@@ -128,40 +132,51 @@ def export_to_bag(config):
         else:
             print "Unsupported output type: %s" % output_format
 
-        get_file(url, output_path, headers, cookie_jar)
+        try:
+            get_file(url, output_path, headers, cookie_jar)
 
-        if output_format == 'prefetch':
-            print "Prefetching file(s)..."
-            with open(output_path, 'rb') as csv_in:
-                reader = csv.DictReader(csv_in)
-                for row in reader:
-                    prefetch_url = row['URL']
-                    prefetch_length = int(row['LENGTH'])
-                    prefetch_filename = os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
-                    print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
-                    get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
-                    file_bytes = os.path.getsize(prefetch_filename)
-                    if prefetch_length != file_bytes:
-                        print "File size of %s does not match expected size of %s for file %s" % \
-                              (prefetch_length, file_bytes, prefetch_filename)
-                        sys.exit(1)
-                csv_in.close()
-                os.remove(output_path)
+            if schema_path:
+                schema_url = ''.join([host, path, schema_path])
+                get_file(schema_url, schema_output_path, {'accept': 'application/json'}, cookie_jar)
 
-        elif output_format == 'fetch':
-            print "Writing fetch.txt..."
-            new_csv_file = ''.join([output_path, '.tmp'])
-            with open(output_path, 'rb') as csv_in, open(new_csv_file, 'wb') as csv_out:
-                reader = csv.DictReader(csv_in)
-                writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
-                writer.writeheader()
-                for row in reader:
-                    row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
-                    writer.writerow(row)
-                csv_in.close()
-                csv_out.close()
-                os.remove(output_path)
-                os.rename(new_csv_file, output_path)
+            if output_format == 'prefetch':
+                print "Prefetching file(s)..."
+                with open(output_path, 'rb') as csv_in:
+                    reader = csv.DictReader(csv_in)
+                    for row in reader:
+                        prefetch_url = row['URL']
+                        prefetch_length = int(row['LENGTH'])
+                        prefetch_filename = \
+                            os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
+                        print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
+                        get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
+                        file_bytes = os.path.getsize(prefetch_filename)
+                        if prefetch_length != file_bytes:
+                            print "File size of %s does not match expected size of %s for file %s" % \
+                                  (prefetch_length, file_bytes, prefetch_filename)
+                            sys.exit(1)
+                    csv_in.close()
+                    os.remove(output_path)
+
+            elif output_format == 'fetch':
+                print "Writing fetch.txt..."
+                new_csv_file = ''.join([output_path, '.tmp'])
+                with open(output_path, 'rb') as csv_in, open(new_csv_file, 'wb') as csv_out:
+                    reader = csv.DictReader(csv_in)
+                    writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
+                    writer.writeheader()
+                    for row in reader:
+                        row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
+                        writer.writerow(row)
+                    csv_in.close()
+                    csv_out.close()
+                    os.remove(output_path)
+                    os.rename(new_csv_file, output_path)
+
+        except RuntimeError as e:
+            print "Fatal runtime error:", e
+            cleanup_bag(bag_path)
+            raise SystemExit(1)
 
     try:
         print "Updating bag manifests..."
@@ -174,19 +189,24 @@ def export_to_bag(config):
         print "BagValidationError:", e
         for d in e.details:
             if isinstance(d, bagit.ChecksumMismatch):
-                print "expected %s to have %s checksum of %s but found %s" % (d.path, d.algorithm, d.expected, d.found)
-    except:
-        print "Unexpected error in Validating Bag:", sys.exc_info()[0]
-        raise
+                print "Bag %s was expected to have %s checksum of %s but found %s" % \
+                      (d.path, d.algorithm, d.expected, d.found)
+                cleanup_bag(bag_path)
+                raise SystemExit(1)
+    except Exception as e:
+        print "Unhandled exception while validating bag:", e
+        cleanup_bag(bag_path)
+        raise SystemExit(1)
 
     try:
         if bag_archiver is not None:
             archive = shutil.make_archive(bag_path, bag_archiver, bag_path)
             print 'Created data bag archive: %s' % archive
-            cleanup_bag(bag_path)
-    except:
-        print 'Unexpected error while creating data bag archive: ', sys.exc_info()[0]
-        raise
+    except Exception as e:
+        print "Unexpected error while creating data bag archive:", e
+        raise SystemExit(1)
+    finally:
+        cleanup_bag(bag_path)
 
     return bag
 

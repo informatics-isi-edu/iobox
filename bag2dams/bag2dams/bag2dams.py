@@ -68,13 +68,15 @@ def put_file(url, input_path, headers, cookie_jar):
                 r = requests.put(url, data=data_file, headers=headers, verify=False, cookies=cookie_jar)
                 if r.status_code != 200:
                     print 'HTTP PUT Failed for url: %s' % url
-                    print 'File [%s] transfer failed. Status code: %s Server response: %s ' % (input_path, r.status_code, r.text)
-                    sys.exit(1)
+                    print "Host %s responded:\n" % urlparse.urlsplit(url).netloc
+                    print r.text
+                    raise RuntimeError('File [%s] transfer failed. ' % input_path)
                 else:
-                    print 'File [%s] transfer successful. Status code: %s' % (input_path, r.status_code)
-                data_file.close()
+                    print 'File [%s] transfer successful.' % input_path
         except requests.exceptions.RequestException as e:
             print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
+        finally:
+            data_file.close()
 
 
 def import_from_bag(config):
@@ -89,7 +91,7 @@ def import_from_bag(config):
 
     if not os.path.exists(bag_path):
         print("Specified bag path not found: %s" % bag_path)
-        sys.exit(1)
+        sys.exit(2)
 
     try:
         if os.path.isfile(bag_path):
@@ -119,12 +121,23 @@ def import_from_bag(config):
             print "BagValidationError:", e
             for d in e.details:
                 if isinstance(d, bagit.ChecksumMismatch):
-                    print "Bag was expected %s to have %s checksum of %s but found %s" % \
-                          (d.path, d.algorithm, d.expected, d.found)
-            raise
-        except:
-            print "Unexpected error in Validating Bag:", sys.exc_info()[0]
-            raise
+                    raise RuntimeError("Bag %s was expected to have %s checksum of %s but found %s" %
+                                       (d.path, d.algorithm, d.expected, d.found))
+        except Exception as e:
+            raise RuntimeError("Unhandled exception while validating bag:", e)
+
+        consistent = True
+        for entity in catalog_config['entities']:
+            input_path = os.path.normpath(os.path.join('data', entity['input_path']))
+            payload_entries = bag.payload_entries()
+            if input_path not in payload_entries:
+                consistent = False
+                print "A specified entity file was not found in the bag payload: %s" % input_path
+                continue
+        if not consistent:
+            raise RuntimeError(
+                "One or more specified input files were not found in the bag payload. "
+                "The import process will now be aborted.")
 
         if username and password:
             cookie_jar = open_session(host, {'username': username, 'password': password})
@@ -145,13 +158,18 @@ def import_from_bag(config):
 
             put_file(url, input_path, headers, cookie_jar)
 
+    except RuntimeError as re:
+        print "Fatal runtime error:", re
+        raise SystemExit(1)
+    except Exception as e:
+        print "Unhandled exception:", e
+        raise SystemExit(1)
     finally:
         if bag_tempdir and os.path.exists(bag_tempdir):
             cleanup_bag(bag_tempdir)
 
 
 def main(argv):
-
     if len(argv) != 2:
         sys.stderr.write("""
 usage: python bag2dams.py <config_file>
@@ -163,6 +181,6 @@ entities and assets to the DAMS \n
     import_from_bag(read_config(argv[1]))
     sys.exit(0)
 
+
 if __name__ == '__main__':
     main(sys.argv)
-
