@@ -20,6 +20,7 @@
     [
       {
         "query_path": "/entity/PPMI:PATIENT/PATNO=3000",
+        "schema_path": "/schema/PPMI/table/PATIENT",
         "output_name": "PPMI/PATIENT",
         "output_format": "csv"
       },

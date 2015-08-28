@@ -1,0 +1,29 @@
+{
+  "bag":
+  {
+    "bag_path":"../../bdds_samples/ppmi-brainmorph-sigvec.zip"
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "",
+    "password": "",
+    "entities":
+    [
+      {
+        "entity_path": "/entity/PPMI:BRAINMORPHSIGVEC",
+        "input_path": "PPMI/BRAINMORPHSIGVEC.csv",
+        "input_format": "csv"
+      }
+    ],
+    "assets":
+    [
+      {
+        "asset_url": "https://some-host/path",
+        "input_path": "PPMI/some/file/asset",
+        "mime-type": "image/x.nifti"
+      }
+    ]
+  }
+}
