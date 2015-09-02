@@ -79,7 +79,7 @@ def get_file(url, output_path, headers, cookie_jar):
                     data_file.flush()
                 print 'File [%s] transfer successful.' % output_path
         except requests.exceptions.RequestException as e:
-            print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
+            raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
 
 
 def export_to_bag(config):
@@ -142,35 +142,37 @@ def export_to_bag(config):
                 print "Prefetching file(s)..."
                 with open(output_path, 'rb') as csv_in:
                     reader = csv.DictReader(csv_in)
-                    for row in reader:
-                        prefetch_url = row['URL']
-                        prefetch_length = int(row['LENGTH'])
-                        prefetch_filename = \
-                            os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
-                        print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
-                        get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
-                        file_bytes = os.path.getsize(prefetch_filename)
-                        if prefetch_length != file_bytes:
-                            print "File size of %s does not match expected size of %s for file %s" % \
-                                  (prefetch_length, file_bytes, prefetch_filename)
-                            sys.exit(1)
-                    csv_in.close()
-                    os.remove(output_path)
+                    try:
+                        for row in reader:
+                            prefetch_url = row['URL']
+                            prefetch_length = int(row['LENGTH'])
+                            prefetch_filename = \
+                                os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
+                            print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
+                            get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
+                            file_bytes = os.path.getsize(prefetch_filename)
+                            if prefetch_length != file_bytes:
+                                raise RuntimeError("File size of %s does not match expected size of %s for file %s" %
+                                                   (prefetch_length, file_bytes, prefetch_filename))
+                    finally:
+                        csv_in.close()
+                        os.remove(output_path)
 
             elif output_format == 'fetch':
                 print "Writing fetch.txt..."
                 new_csv_file = ''.join([output_path, '.tmp'])
-                with open(output_path, 'rb') as csv_in, open(new_csv_file, 'wb') as csv_out:
-                    reader = csv.DictReader(csv_in)
-                    writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
-                    writer.writeheader()
-                    for row in reader:
-                        row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
-                        writer.writerow(row)
-                    csv_in.close()
-                    csv_out.close()
-                    os.remove(output_path)
-                    os.rename(new_csv_file, output_path)
+                csv_in = open(output_path, 'rb')
+                csv_out = open(new_csv_file, 'wb')
+                reader = csv.DictReader(csv_in)
+                writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
+                writer.writeheader()
+                for row in reader:
+                    row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
+                    writer.writerow(row)
+                csv_in.close()
+                csv_out.close()
+                os.remove(output_path)
+                os.rename(new_csv_file, output_path)
 
         except RuntimeError as e:
             print "Fatal runtime error:", e

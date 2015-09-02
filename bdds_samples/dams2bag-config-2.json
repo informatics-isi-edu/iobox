@@ -1,0 +1,34 @@
+{
+  "bag":
+  {
+    "bag_path": "../temp/ppmi-sample-2",
+    "bag_archiver":"zip",
+    "bag_metadata":
+    {
+      "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
+      "Contact-Name": "Mike D'Arcy",
+      "External-Description": "A bag containing a single patient's summary data along with prefetched imaging files in NIFTI format."
+    }
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "",
+    "password": "",
+    "queries":
+    [
+      {
+        "query_path": "/entity/PPMI:PATIENT/PATNO=3616",
+        "schema_path": "/schema/PPMI/table/PATIENT",
+        "output_name": "PPMI/PATIENT",
+        "output_format": "csv"
+      },
+      {
+        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3616/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "output_name": "PPMI/IMAGES",
+        "output_format": "prefetch"
+      }
+    ]
+  }
+}

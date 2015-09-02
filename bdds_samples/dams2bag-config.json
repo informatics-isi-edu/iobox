@@ -1,13 +1,13 @@
 {
   "bag":
   {
-    "bag_path": "../temp/dams2bag-test",
+    "bag_path": "../temp/ppmi-sample-1",
     "bag_archiver":"zip",
     "bag_metadata":
     {
       "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
-      "Contact-Name": "dams2bag test configuration",
-      "External-Description": "A bag created by the dams2bag utility containing test data"
+      "Contact-Name": "Mike D'Arcy",
+      "External-Description": "A bag containing PPMI patient summary data and links to images (via fetch.txt) matching the following properties: enrolled, parkinson's, mci, fncdtcog"
     }
   },
   "catalog":
