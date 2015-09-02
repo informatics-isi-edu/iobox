@@ -7,12 +7,21 @@
 from distutils.core import setup
 
 setup(
-    name="sql2bag",
-    description="Creates a bag from a set of ERMrest URLs",
+    name="dams2bag",
+    description="Creates a bag from a set of ERMRest URLs",
     version="0.1-prerelease",
     packages=["dams2bag"],
     package_dir={'dams2bag': 'dams2bag'},
-    requires=["os", "sys", "shutil", "urlparse", "cookielib", "requests", "simplejson", "bagit"],
+    requires=['sys',
+              'cookielib',
+              'shutil',
+              'os.path',
+              'urlparse',
+              'requests',
+              'csv',
+              'bagit',
+              'ordereddict'
+              'simplejson' ],
     maintainer_email="support@misd.isi.edu",
     license='Apache 2.0',
     classifiers=[

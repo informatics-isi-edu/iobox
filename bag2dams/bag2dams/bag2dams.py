@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 def cleanup_bag(bag_path):
-    print "Cleaning up bag: %s" % bag_path
+    print "Cleaning up bag dir: %s" % bag_path
     shutil.rmtree(bag_path)
 
 
@@ -74,9 +74,7 @@ def put_file(url, input_path, headers, cookie_jar):
                 else:
                     print 'File [%s] transfer successful.' % input_path
         except requests.exceptions.RequestException as e:
-            print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
-        finally:
-            data_file.close()
+            raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
 
 
 def import_from_bag(config):

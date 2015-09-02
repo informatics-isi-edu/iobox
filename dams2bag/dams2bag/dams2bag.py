@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 def cleanup_bag(bag_path):
-    print "Cleaning up bag: %s" % bag_path
+    print "Cleaning up bag dir: %s" % bag_path
     shutil.rmtree(bag_path)
 
 
@@ -73,11 +73,10 @@ def get_file(url, output_path, headers, cookie_jar):
                 print r.text
                 raise RuntimeError('File [%s] transfer failed. ' % output_path)
             else:
-                data_file = open(output_path, 'wb')
-                for chunk in r.iter_content(CHUNK_SIZE):
-                    data_file.write(chunk)
-                data_file.flush()
-                data_file.close()
+                with open(output_path, 'wb') as data_file:
+                    for chunk in r.iter_content(CHUNK_SIZE):
+                        data_file.write(chunk)
+                    data_file.flush()
                 print 'File [%s] transfer successful.' % output_path
         except requests.exceptions.RequestException as e:
             print 'HTTP Request Exception: %s %s' % (e.errno, e.message)
