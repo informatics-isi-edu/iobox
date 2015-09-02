@@ -19,15 +19,15 @@
     "queries":
     [
       {
-        "query_path": "/entity/PPMI:PATIENT/PATNO=3000",
+        "query_path": "/entity/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A@sort(PATNO)",
         "schema_path": "/schema/PPMI/table/PATIENT",
         "output_name": "PPMI/PATIENT",
         "output_format": "csv"
       },
       {
-        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3000/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "query_path": "/attribute/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
         "output_name": "PPMI/IMAGES",
-        "output_format": "prefetch"
+        "output_format": "fetch"
       }
     ]
   }

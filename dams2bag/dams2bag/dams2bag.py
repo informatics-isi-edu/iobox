@@ -199,8 +199,9 @@ def export_to_bag(config):
 
     try:
         if bag_archiver is not None:
+            print "Archiving bag (%s): %s" % (bag_archiver, bag_path)
             archive = shutil.make_archive(bag_path, bag_archiver, bag_path)
-            print 'Created data bag archive: %s' % archive
+            print 'Created bag archive: %s' % archive
     except Exception as e:
         print "Unexpected error while creating data bag archive:", e
         raise SystemExit(1)
