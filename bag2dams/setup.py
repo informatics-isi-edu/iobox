@@ -14,17 +14,17 @@ setup(
     version="0.1-prerelease",
     packages=['bag2dams'],
     package_dir={'bag2dams': 'bag2dams'},
-    requires=['sys,'
-              'shutil'
-              'requests'
-              'cookielib'
-              'zipfile'
-              'urlparse'
-              'tarfile'
-              'os'
-              'tempfile'
-              'bagit'
-              'simplejson'
+    requires=['sys',
+              'shutil',
+              'requests',
+              'cookielib',
+              'zipfile',
+              'urlparse',
+              'tarfile',
+              'os',
+              'tempfile',
+              'bagit',
+              'simplejson',
               'ordereddict'],
     maintainer_email='support@misd.isi.edu',
     license='Apache 2.0',
