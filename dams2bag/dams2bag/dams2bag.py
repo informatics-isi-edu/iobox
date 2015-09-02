@@ -165,7 +165,7 @@ def export_to_bag(config):
                 csv_out = open(new_csv_file, 'wb')
                 reader = csv.DictReader(csv_in)
                 writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
-                writer.writeheader()
+                writer.writerow(dict((fn, fn) for fn in reader.fieldnames))  # for 2.6 support since no writeheader
                 for row in reader:
                     row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
                     writer.writerow(row)
@@ -199,16 +199,16 @@ def export_to_bag(config):
         cleanup_bag(bag_path)
         raise SystemExit(1)
 
-    try:
-        if bag_archiver is not None:
+    if bag_archiver is not None:
+        try:
             print "Archiving bag (%s): %s" % (bag_archiver, bag_path)
             archive = shutil.make_archive(bag_path, bag_archiver, bag_path)
             print 'Created bag archive: %s' % archive
-    except Exception as e:
-        print "Unexpected error while creating data bag archive:", e
-        raise SystemExit(1)
-    finally:
-        cleanup_bag(bag_path)
+        except Exception as e:
+            print "Unexpected error while creating data bag archive:", e
+            raise SystemExit(1)
+        finally:
+            cleanup_bag(bag_path)
 
     return bag
 
