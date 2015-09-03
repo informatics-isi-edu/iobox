@@ -145,11 +145,9 @@ def write_schema(inputs_js,col_defs):
 
 
 def csv_filename(extract):
-    #return  extract['schema_name']+PATH_SEP+extract['table_name']+'.csv'
     return   os.path.join(extract['schema_name'],extract['table_name']+'.csv')
 
 
-#def create_bag(inputs_js,bag_dir): 
 def create_bag(inputs_js): 
 
     host = inputs_js['mssql_server']['dns']
@@ -159,13 +157,6 @@ def create_bag(inputs_js):
 
     bag_dir = inputs_js['bag']['bag_path']
 
-    print host
-    print database
-    print user
-    print password
-    print bag_dir 
-
-    
     if os.path.exists(bag_dir):
         print "Passed bag directory [%s] already exists....deleting it...." % bag_dir
         shutil.rmtree(bag_dir)
@@ -174,9 +165,6 @@ def create_bag(inputs_js):
     for extract in inputs_js['extracts']:
         sql_file=extract['query_file']
         csv_file = csv_filename(extract)
-
-        print sql_file
-        print csv_file
 
         
         conn = pyodbc.connect(dsn=host, database=database, user=user, password=password,charset='UTF8')    
@@ -280,7 +268,7 @@ sql2bag-config.json
         sys.exit(1)
 
     bag = create_bag(read_json(argv[1])) 
-
+    sys.exit(0)
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
