@@ -1,0 +1,35 @@
+{
+    "bag":
+    {
+      "bag_path":"data/test_bag"
+    },
+    "mssql_server":
+    {
+      "server_name":"bugacov.isi.edu",
+      "dns": "gpcr",
+      "database_name":"rce",
+      "user_name":"sa",
+      "db_password":"*******"
+    },
+    "extracts": [
+         { "query_file" : "data/example_query_construct.sql",
+	   "schema_name": "gpcr",
+	   "table_name" : "construct",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "data/example_query_cont_target.sql",
+	   "schema_name": "gpcr",
+	   "table_name" : "cont_target",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "data/example_query_cont_target.sql",
+	   "schema_name": "gpcr2",
+	   "table_name" : "cont_target",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 }
+    ]
+}
+

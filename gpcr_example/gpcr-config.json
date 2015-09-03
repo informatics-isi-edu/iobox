@@ -1,13 +1,17 @@
 {
-    "SERVER_NAME":"bugacov.isi.edu",
-    "DNS": "gpcr",
-    "DATABASE_NAME":"rce",
-    "USER_NAME":"sa",
-    "DB_PASSWORD":"********",
-    "DESTINATION_SERVER_NAME":"vm-dev-029.misd.isi.edu",
-    "DESTINATION_USER_NAME":"gpcr1",
-    "DESTINATION_PASSWORD":"********",
-    "EXTRACTS": [
+    "bag":
+    {
+        "bag_path":"gpcr_example/gpcr_bag"
+    },
+    "mssql_server":
+    {
+        "server_name":"bugacov.isi.edu",
+        "dns": "gpcr",
+        "database_name":"rce",
+        "user_name":"sa",
+        "db_password":"_gpcr2015!_"
+    },
+    "extracts": [
          { "query_file" : "gpcr_example/CleavageSite.sql",
 	   "schema_name": "legacy",
 	   "table_name" : "cleavagesite",

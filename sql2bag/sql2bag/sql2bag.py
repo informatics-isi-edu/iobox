@@ -10,6 +10,7 @@ import shutil
 import bagit
 
 
+
 py_dic = { str: 'str', buffer: 'buffer', int: 'int', float: 'float', datetime.datetime: 'datetime.datetime',
            datetime.date: 'datetime.date',datetime.time: 'datetime.time', bool: 'bool', 
            unicode: 'unicode', bytearray: 'bytearray' , long: 'long' }
@@ -230,10 +231,10 @@ def main(argv):
         sys.stderr.write(""" 
 usage: python sql2bag.py <sql2bag-config.json> 
 
-<sql2bag-config.json>: reads input from <input_file.js> file. See below for format example. 
+<sql2bag-config.json>: json input file. See below for configuration example file.
 
-The sql2bag.py utility creates a bag in the location passed in the "bag_path" value in the sql2bag-config.json file.
-
+The sql2bag.py utility reads SQL server and queries inputs from the configuration file and the creates a bag in the location passed as  "bag_path" 
+value of the configuration file.
 
 sql2bag-config.json
 {
@@ -270,7 +271,6 @@ sql2bag-config.json
          }
     ]
 }
-
 
 
 1) "dns" is the Data Source Name used in the ODBC connector. 
