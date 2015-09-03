@@ -91,20 +91,23 @@ def write_manifest(inputs_js,col_defs):
 
     manifest={}
     extracts =[]
-    for ee in inputs_js['EXTRACTS']:
+    for ee in inputs_js['extracts']:
         extract={}
         extract['table_data']=csv_filename(ee)
         extract['schema_name']=ee['schema_name']
         extract['table_name']=ee['table_name']
         extract['column_definitions']=col_defs[csv_filename(ee)]
-        extract['object_columns']=ee['bulk_data_columns']        
+        extract['object_columns']=ee['bulk_data_columns']
+        extract['unique_key_columns']=ee['unique_key_columns']        
         extracts.append(extract)
 
     manifest['extracts']=extracts
-    manifest['source']=inputs_js['SERVER_NAME']
-    manifest['destination']=inputs_js['DESTINATION_SERVER_NAME']
-    manifest['destination_user_name']=inputs_js['DESTINATION_USER_NAME']
-    manifest['destination_password']=inputs_js['DESTINATION_PASSWORD']
+    source={}
+    source['source_server_name']=inputs_js['mssql_server']['server_name']
+    source['source_db_name']=inputs_js['mssql_server']['database_name']
+    source['source_dns']=inputs_js['mssql_server']['dns']
+    manifest['sql_source']=source
+
 
     return manifest
 
@@ -116,7 +119,7 @@ def write_schema(inputs_js,col_defs):
     schemas_vect=[]
     
     schema_names={}
-    for ee in inputs_js['EXTRACTS']:
+    for ee in inputs_js['extracts']:
         if ee['schema_name'] not in schema_names.keys():
             schema_names[ee['schema_name']]=ee['schema_name']
 
@@ -124,7 +127,7 @@ def write_schema(inputs_js,col_defs):
         schema={}
         schema['name']=schema_name
         tables=[]
-        for ee in inputs_js['EXTRACTS']:
+        for ee in inputs_js['extracts']:
             if ee['schema_name'] == schema_name:
                 table={}
                 table['name']=csv_filename(ee)
@@ -145,23 +148,36 @@ def csv_filename(extract):
     return   os.path.join(extract['schema_name'],extract['table_name']+'.csv')
 
 
-def create_bag(inputs_js,bag_dir): 
-    host = inputs_js['DNS']
-    database = inputs_js['DATABASE_NAME']
-    user = inputs_js['USER_NAME']
-    password = inputs_js['DB_PASSWORD']
+#def create_bag(inputs_js,bag_dir): 
+def create_bag(inputs_js): 
+
+    host = inputs_js['mssql_server']['dns']
+    database = inputs_js['mssql_server']['database_name']
+    user = inputs_js['mssql_server']['user_name']
+    password = inputs_js['mssql_server']['db_password']
+
+    bag_dir = inputs_js['bag']['bag_path']
+
+    print host
+    print database
+    print user
+    print password
+    print bag_dir 
 
     
-
     if os.path.exists(bag_dir):
         print "Passed bag directory [%s] already exists....deleting it...." % bag_dir
         shutil.rmtree(bag_dir)
 
     col_defs={}
-    for extract in inputs_js['EXTRACTS']:
+    for extract in inputs_js['extracts']:
         sql_file=extract['query_file']
         csv_file = csv_filename(extract)
 
+        print sql_file
+        print csv_file
+
+        
         conn = pyodbc.connect(dsn=host, database=database, user=user, password=password,charset='UTF8')    
         cursor = conn.cursor()
         sql = read_query(sql_file)
@@ -175,13 +191,12 @@ def create_bag(inputs_js,bag_dir):
             col_types.append(dd)
 
         col_defs[csv_file]=col_types
-        #csv_file_rel=bag_dir+PATH_SEP+csv_file
         csv_file_rel=os.path.join(bag_dir,csv_file)
-        write_csv(cursor,csv_file_rel)
+        write_csv(cursor,csv_file_rel) 
+
 
     schema_file=write_schema(inputs_js,col_defs)
 
-    #with open(bag_dir+PATH_SEP+'schemas.js', 'w') as f:
     with open(os.path.join(bag_dir,'schemas.js'), 'wb') as f:
         json.dump(schema_file, f,indent=3,encoding="utf-8",sort_keys=True)
 
@@ -211,29 +226,44 @@ def create_bag(inputs_js,bag_dir):
         
 def main(argv):
     
-    if len(argv) != 3:
+    if len(argv) != 2:
         sys.stderr.write(""" 
-usage: python sql2bag.py <input_file.js> <bag_name>
+usage: python sql2bag.py <sql2bag-config.json> 
 
-<input_file.js>: reads input from <input_file.js> file. See below for format example. 
-<bag_name>: creates a bag under bagit specifications under the location passed as <bag_name> 
-            (if the directory <bag_name> already exists it deletes it and creates a new one)
- 
-input_file.js example:
+<sql2bag-config.json>: reads input from <input_file.js> file. See below for format example. 
+
+The sql2bag.py utility creates a bag in the location passed in the "bag_path" value in the sql2bag-config.json file.
+
+
+sql2bag-config.json
 {
-    "SERVER_NAME":"mssqlserver.isi.edu",
-    "DNS": "gpcr",
-    "DATABASE_NAME":"DB_NAME",
-    "USER_NAME":"db_username",
-    "EXTRACTS": [
-         { "query_file" : "sql_construct.sql",
+    "bag":
+    {
+      "bag_path":"example_files/test_bag"
+    },
+    "mssql_server":
+    {
+      "server_name":"bugacov.isi.edu",
+      "dns": "gpcr",
+      "database_name":"rce",
+      "user_name":"sa",
+      "db_password":"*********"
+    },
+    "extracts": [
+         { "query_file" : "example_files/example_query_construct.sql",
            "schema_name": "gpcr",
            "table_name" : "construct",
            "bulk_data_columns" : [],
            "unique_key_columns": ["id"]
          },
-         { "query_file" : "sql_cont_target.sql",
+         { "query_file" : "example_files/example_query_cont_target.sql",
            "schema_name": "gpcr",
+           "table_name" : "cont_target",
+           "bulk_data_columns" : [],
+           "unique_key_columns": ["id"]
+         },
+         { "query_file" : "example_files/example_query_cont_target.sql",
+           "schema_name": "gpcr2",
            "table_name" : "cont_target",
            "bulk_data_columns" : [],
            "unique_key_columns": ["id"]
@@ -241,15 +271,15 @@ input_file.js example:
     ]
 }
 
-1) DNS is the Data Source Name used in the ODBC connector. 
+
+
+1) "dns" is the Data Source Name used in the ODBC connector. 
 2) Each query_file must contain a properly writen query in SQL.
 
 """)
         sys.exit(1)
 
-    inputs_js=read_json(argv[1])
-    bag_path=argv[2]
-    bag = create_bag(inputs_js,bag_path) 
+    bag = create_bag(read_json(argv[1])) 
 
 
 if __name__ == '__main__':
