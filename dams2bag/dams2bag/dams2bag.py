@@ -8,6 +8,8 @@ import urlparse
 import requests
 import csv
 import bagit
+import zipfile
+import tarfile
 import ordereddict
 import simplejson as json
 
@@ -80,6 +82,43 @@ def get_file(url, output_path, headers, cookie_jar):
                 print 'File [%s] transfer successful.' % output_path
         except requests.exceptions.RequestException as e:
             raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
+
+
+def archive_bag(bag_path, bag_archiver):
+    print "Archiving bag (%s): %s" % (bag_archiver, bag_path)
+
+    tarmode = None
+    archive = None
+    fn = '.'.join([os.path.basename(bag_path), bag_archiver])
+    if bag_archiver == 'tar':
+        tarmode = 'w'
+    elif bag_archiver == 'tgz':
+        tarmode = 'w:gz'
+    elif bag_archiver == 'bz2':
+        tarmode = 'w:bz2'
+    elif bag_archiver == 'zip':
+        zfp = os.path.join(os.path.dirname(bag_path), fn)
+        zf = zipfile.ZipFile(zfp, 'w', allowZip64=True)
+        for dirpath, dirnames, filenames in os.walk(bag_path):
+            for name in filenames:
+                filepath = os.path.normpath(os.path.join(dirpath, name))
+                relpath = os.path.relpath(filepath, os.path.dirname(bag_path))
+                if os.path.isfile(filepath):
+                    zf.write(filepath, relpath)
+        zf.close()
+        archive = zf.filename
+    else:
+        raise RuntimeError("Archive format not supported for bag file: %s \n "
+                           "Supported archive formats are ZIP or TAR/GZ/BZ2" % bag_path)
+
+    if tarmode:
+        tfp = os.path.join(os.path.dirname(bag_path), fn)
+        t = tarfile.open(tfp, tarmode)
+        t.add(bag_path, os.path.relpath(bag_path, os.path.dirname(bag_path)), recursive=True)
+        t.close()
+        archive = t.name
+
+    print 'Created bag archive: %s' % archive
 
 
 def export_to_bag(config):
@@ -201,9 +240,7 @@ def export_to_bag(config):
 
     if bag_archiver is not None:
         try:
-            print "Archiving bag (%s): %s" % (bag_archiver, bag_path)
-            archive = shutil.make_archive(bag_path, bag_archiver, bag_path)
-            print 'Created bag archive: %s' % archive
+            archive_bag(bag_path, bag_archiver.lower())
         except Exception as e:
             print "Unexpected error while creating data bag archive:", e
             raise SystemExit(1)

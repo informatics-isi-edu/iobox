@@ -106,13 +106,22 @@ def import_from_bag(config):
                 tarred.extractall(bag_tempdir)
                 tarred.close()
             else:
-                print "Archive format not supported for bag file: %s" % bag_path
-                print "Supported archive formats are ZIP or TAR/GZ/BZ2"
+                raise RuntimeError("Archive format not supported for bag file: %s"
+                                   "\nSupported archive formats are ZIP or TAR/GZ/BZ2" % bag_path)
 
-            bag_path = os.path.abspath(bag_tempdir)
+            for dirpath, dirnames, filenames in os.walk(bag_tempdir):
+                if len(dirnames) > 1:
+                    # According to the spec there should only ever be one base bag directory at the base of a
+                    # deserialized archive. It is not clear if other non-bag directories are allowed.
+                    # For now, assume no other dirs allowed and terminate if more than one present.
+                    raise RuntimeError(
+                        "Invalid bag serialization: Multiple base directories found in extracted archive.")
+                else:
+                    bag_path = os.path.abspath(os.path.join(dirpath, dirnames[0]))
+                    break
 
         try:
-            print "Opening bag: %s" % bag_path
+            print "Opening and validating bag: %s" % bag_path
             bag = bagit.Bag(bag_path)
             bag.validate()
         except bagit.BagValidationError as e:
@@ -122,7 +131,7 @@ def import_from_bag(config):
                     raise RuntimeError("Bag %s was expected to have %s checksum of %s but found %s" %
                                        (d.path, d.algorithm, d.expected, d.found))
         except Exception as e:
-            raise RuntimeError("Unhandled exception while validating bag:", e)
+            raise RuntimeError("Unhandled exception while validating bag: %s" % e)
 
         consistent = True
         for entity in catalog_config['entities']:

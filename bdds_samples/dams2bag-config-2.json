@@ -7,7 +7,8 @@
     {
       "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
       "Contact-Name": "Mike D'Arcy",
-      "External-Description": "A bag containing a single patient's summary data along with prefetched imaging files in NIFTI format."
+      "External-Description": "A bag containing a single patient's summary data along with prefetched imaging files in NIFTI format.",
+      "Internal-Sender-Identifier": "USC-ISI-IRSD"
     }
   },
   "catalog":
