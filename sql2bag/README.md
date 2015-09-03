@@ -21,11 +21,10 @@ The `sql2bag` utility connects to a Relational DataBase Server, executes SQL sel
   * Test the connection in the connection Wizard 
 2. Install the sql2dams tool from a 
   1. Install Python on your Windows system (it can be dowloaded from https://www.python.org/downloads/release/python-2710/ and follow installations defaults)
-  2. Add C:\Python27 and C:\Python27\Scripts to PATH environment variables
+  2. Add C:\Python27 and C:\Python27\Scripts to the PATH environment variable
   3. Install additional Python libraries. Open a command window and type:
     * pip install pyodbc
     * pip install bagit
-    * pip install requests 
   4. Download the sql2bag.zip distribution file 
   5. Save the sql2bag.zip file to a location in your machine (e.g., C:\Users\myname\iobox) and unzip it
   6. Open a command window and cd to the folder of the unzipped code (e.g., C:\Users\myname\iobox\sql2bag-0.1-prerelease) and type the command
