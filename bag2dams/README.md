@@ -9,9 +9,9 @@ the data from the BagIt package. It also loads the assets to a Hatrac store (TBD
 
 ### Installation
 1. Install additional Python libraries:
-    * pip install pyodbc
     * pip install bagit
     * pip install requests
+
 2. From the source distribution base directory, run:
     * python setup.py install
 
