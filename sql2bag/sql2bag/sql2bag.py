@@ -9,6 +9,9 @@ import json
 import shutil 
 import bagit
 
+from dams2bag.dams2bag import archive_bag
+from dams2bag.dams2bag import cleanup_bag
+
 
 
 py_dic = { str: 'str', buffer: 'buffer', int: 'int', float: 'float', datetime.datetime: 'datetime.datetime',
@@ -155,7 +158,9 @@ def create_bag(inputs_js):
     user = inputs_js['mssql_server']['user_name']
     password = inputs_js['mssql_server']['db_password']
 
-    bag_dir = inputs_js['bag']['bag_path']
+    bag_dir, ba  = os.path.splitext(inputs_js['bag']['bag_path'])
+
+    bag_archiver = ba.replace('.','').lower()
 
     if os.path.exists(bag_dir):
         print "Passed bag directory [%s] already exists....deleting it...." % bag_dir
@@ -208,6 +213,16 @@ def create_bag(inputs_js):
     except:
         print "Unexpected error in Validating Bag:", sys.exc_info()[0]
         raise
+
+
+    if bag_archiver is not None:
+        try:
+            archive_bag(bag_dir, bag_archiver.lower())
+        except Exception as e:
+            print "Unexpected error while creating data bag archive:", e
+            raise SystemExit(1)
+        finally:
+            cleanup_bag(bag_dir)
 
 
     return bag
