@@ -1,23 +1,41 @@
-
 #
 # Copyright 2015 University of Southern California
 # Distributed under the Apache License, Version 2.0. See LICENSE for more info.
 #
 
+""" Installation script for the IObox utilities.
+"""
+
 from distutils.core import setup
 
 setup(
     name="iobox",
-    description="perform transformations from several data sources to DAMS using data bag elements ",
+    description="ETL utilities for ERMrest+HATRAC",
     url='https://github.com/informatics-isi-edu/iobox/',
-    author='misd',
+    maintainer='USC Information Sciences Institute ISR Division',
+    maintainer_email='misd-support@isi.edu',
     version="0.1-prerelease",
-    packages=['sql2bag','bag2dams'],
-    package_dir={'sql2bag': 'sql2bag/sql2bag','bag2dams': 'bag2dams/bag2dams'},
-    package_data={'sql2bag': ['gpcr_example/*.*']},
+    packages=['iobox', 'iobox.bag2dams', 'iobox.dams2bag', 'iobox.sql2bag'],
+    package_data={'iobox.sql2bag': ['data/*.*']},
     scripts=['bin/iobox_sql2dams.py'],
-    requires=['orderdict','simplejson','pyodbc', 'csv', 'os', 'sys', 'datetime', 'json', 'bagit'],
-    maintainer_email='support@misd.isi.edu',
+    requires=[
+        'bagit',
+        'cookielib',
+        'csv',
+        'datetime',
+        'json',
+        'ordereddict',
+        'os',
+        'os.path',
+        'pyodbc',
+        'requests',
+        'simplejson',
+        'shutil',
+        'sys',
+        'zipfile',
+        'tarfile',
+        'tempfile',
+        'urlparse'],
     license='Apache 2.0',
     classifiers=[
         'Intended Audience :: Science/Research',
