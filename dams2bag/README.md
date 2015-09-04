@@ -15,7 +15,7 @@ The `dams2bag` utility authenticates to an ERMRest store, makes one or more enti
     * python setup.py install
 
 ### Execution
-1. From the bag2dams/bag2dams directory, run:
+1. From the dams2bag/dams2bag directory, run:
     * ./dams2bag /path/to/config/file
 
 ### Structure of the dams2bag configuration file:
