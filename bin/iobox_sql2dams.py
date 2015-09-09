@@ -17,8 +17,9 @@
 
 import sys
 import json
-from sql2bag import sql2bag
-from bag2dams import bag2dams
+import iobox
+from iobox.sql2bag import sql2bag
+from iobox.bag2dams import bag2dams
 
 if __name__ == "__main__":
     
