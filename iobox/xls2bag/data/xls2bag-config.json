@@ -1,0 +1,28 @@
+{
+    "bag":
+    {
+      "bag_path":"data/test_bag"
+    },
+    "excel":
+    {
+       "xls_file": "data/xls2bag_test.xlsx",
+       "worksheets": [
+           { "worksheet":"TEST1",
+             "offset_row":"XLS2BAG_TEST",
+             "tables": [
+                 {"name":"T1",
+		  "first_column":"T11",
+                  "num_columns":3,
+		  "referenced":"T11"
+                 },
+                 {"name":"T2",
+		  "first_column":"T21",
+                  "num_columns":4,
+		  "referenced":"NULL"
+                 }
+             ]
+	   }
+       ]
+    }
+}
+
