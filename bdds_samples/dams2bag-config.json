@@ -26,9 +26,14 @@
         "output_format": "csv"
       },
       {
-        "query_path": "/attribute/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "query_path": "/attribute/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A/S:=PATIENT_IMAGES/F:=IMAGE_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
         "output_name": "PPMI/IMAGES",
         "output_format": "fetch"
+      },
+      {
+        "query_path": "/attribute/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A/F:=DATA_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "output_name": "PPMI/BAM",
+        "output_format": "gofetch"
       }
     ]
   }

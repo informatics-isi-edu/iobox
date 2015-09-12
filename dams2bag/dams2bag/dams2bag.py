@@ -167,6 +167,9 @@ def export_to_bag(config):
         elif output_format == 'fetch':
             headers = {'accept': 'text/csv'}
             output_path = os.path.abspath(os.path.join(bag_path, 'fetch.txt'))
+        elif output_format == 'gofetch':
+            headers = {'accept': 'text/csv'}
+            output_path = os.path.abspath(os.path.join(bag_path, 'gofetch.txt'))
         else:
             print "Unsupported output type: %s" % output_format
 
@@ -197,8 +200,8 @@ def export_to_bag(config):
                         csv_in.close()
                         os.remove(output_path)
 
-            elif output_format == 'fetch':
-                print "Writing fetch.txt..."
+            elif output_format == 'fetch' or output_format == 'gofetch':
+                print "Writing %s..." % output_path
                 new_csv_file = ''.join([output_path, '.tmp'])
                 csv_in = open(output_path, 'rb')
                 csv_out = open(new_csv_file, 'wb')

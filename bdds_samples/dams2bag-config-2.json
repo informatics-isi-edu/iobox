@@ -26,7 +26,7 @@
         "output_format": "csv"
       },
       {
-        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3616/S:=SUBJECT_FILES/F:=FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3616/S:=PATIENT_IMAGES/F:=IMAGE_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
         "output_name": "PPMI/IMAGES",
         "output_format": "prefetch"
       }
