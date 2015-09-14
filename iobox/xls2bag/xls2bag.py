@@ -40,7 +40,6 @@ def get_rowheader(s,row_offset):
     else:
         print "ERROR [xls2bag] Can't handle type of passed row_offset=%s" % type(row_offset)
         sys.exit(1)
-
     
     if rowheader == -1:
         print "ERROR [xls2bag] Can's compute the offset row to locate header row"
@@ -51,8 +50,16 @@ def get_rowheader(s,row_offset):
 
 def get_col_index(s,irow,val):
     for icol in xrange(s.ncols):
-        if s.cell(irow,icol).value == val:
-            return icol
+        try: 
+            if s.cell(irow,icol).value == val:
+                return icol
+        except Exception, e:
+            sys.stderr.write("ERROR [xls2bag]: Cannot find column index with header [%s] \n" % val)
+            sys.stderr.write("Exception: %s\n" % str(e))
+            sys.exit(1)
+
+def format_header(val):
+    return val.replace(' ','_').lower()
 
 # It assumes that:
 #      1) if row_offset is an int, then that's the row number of the header row
@@ -79,9 +86,9 @@ def write_table(s,row_offset,col1,num_cols,refs,ref_col,wr):
         if rowid == rowheader:
             head = [] 
             if ref_col == "NULL":
-                head.append(refs[ref_row])
+                head.append(format_header(refs[ref_row]))
             for colid in range(col1_index,(col1_index+num_cols)):
-                head.append(s.cell(rowid,colid).value.replace(' ','_').lower())
+                head.append(format_header(s.cell(rowid,colid).value))
             print head
             wr.writerow(head)
         else:
