@@ -24,7 +24,6 @@ setup(
               'os',
               'tempfile',
               'bagit',
-              'simplejson',
               'ordereddict'],
     maintainer_email='support@misd.isi.edu',
     license='Apache 2.0',

@@ -11,7 +11,7 @@ import bagit
 import zipfile
 import tarfile
 import ordereddict
-import simplejson as json
+import json
 
 CHUNK_SIZE = 1024 * 1024
 requests.packages.urllib3.disable_warnings()

@@ -10,7 +10,6 @@ the data from the BagIt package. It also loads the assets to a Hatrac store (TBD
 ### Installation
 1. Install additional Python libraries:
     * pip install bagit
-    * pip install simplejson
     * pip install requests
 
     Note: it may be necessary to upgrade the version of the required libraries if they are already installed.  To do this, execute: `pip install --upgrade <library>`

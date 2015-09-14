@@ -9,7 +9,6 @@ The `dams2bag` utility authenticates to an ERMRest store, makes one or more enti
 ### Installation
 1. Install additional Python libraries:
     * pip install bagit
-    * pip install simplejson
     * pip install requests
 
     Note: it may be necessary to upgrade the version of the required libraries if they are already installed.  To do this, execute: `pip install --upgrade <library>`

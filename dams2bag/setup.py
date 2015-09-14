@@ -20,8 +20,7 @@ setup(
               'requests',
               'csv',
               'bagit',
-              'ordereddict',
-              'simplejson'],
+              'ordereddict'],
     maintainer_email="support@misd.isi.edu",
     license='Apache 2.0',
     classifiers=[
