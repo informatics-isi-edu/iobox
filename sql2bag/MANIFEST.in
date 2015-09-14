@@ -1,2 +1,0 @@
-recursive-include sql2bag/data *
-bin/sql2bag
