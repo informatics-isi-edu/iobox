@@ -200,7 +200,7 @@ def export_to_bag(config):
                         csv_in.close()
                         os.remove(output_path)
 
-            elif output_format == 'fetch' or output_format == 'gofetch':
+            elif output_format == 'fetch' or output_format == 'globusfetch':
                 print "Writing %s..." % output_path
                 new_csv_file = ''.join([output_path, '.tmp'])
                 csv_in = open(output_path, 'rb')

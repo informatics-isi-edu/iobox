@@ -33,7 +33,7 @@
       {
         "query_path": "/attribute/A:=PPMI:PATIENT/PATNO=4117;PATNO=4116;PATNO=4108;PATNO=4105;PATNO=4100;PATNO=4051;PATNO=3551;PATNO=3448;PATNO=3445;PATNO=3444;PATNO=3443;PATNO=3436;PATNO=3435;PATNO=3433;PATNO=3431;PATNO=3430;PATNO=3429;PATNO=3418/$A/F:=DATA_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
         "output_name": "PPMI/BAM",
-        "output_format": "gofetch"
+        "output_format": "globusfetch"
       }
     ]
   }
