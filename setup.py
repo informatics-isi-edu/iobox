@@ -17,7 +17,7 @@ setup(
     version="0.1-prerelease",
     packages=['iobox', 'iobox.bag2dams', 'iobox.dams2bag', 'iobox.sql2bag'],
     package_data={'iobox.sql2bag': ['data/*.*']},
-    scripts=['bin/sql2dams.py'],
+    scripts=['bin/sql2dams.py', 'bin/dams2bag.py', 'bin/bag2dams.py'],
     requires=[
         'bagit',
         'cookielib',

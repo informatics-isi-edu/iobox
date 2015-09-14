@@ -10,7 +10,7 @@ import tarfile
 import os.path
 import tempfile
 import bagit
-import json
+import simplejson as json
 import ordereddict
 
 requests.packages.urllib3.disable_warnings()
