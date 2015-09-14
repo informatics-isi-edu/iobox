@@ -1,7 +1,7 @@
 {
   "bag":
   {
-    "bag_path": "../temp/ppmi-sample-2",
+    "bag_path": "samples/bdds/dams2bag-sample-output/ppmi-sample-2",
     "bag_archiver":"zip",
     "bag_metadata":
     {

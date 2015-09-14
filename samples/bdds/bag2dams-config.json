@@ -1,7 +1,7 @@
 {
   "bag":
   {
-    "bag_path":"../../bdds_samples/ppmi-brainmorph-sigvec.zip"
+    "bag_path":"samples/bdds/ppmi-brainmorph-sigvec.zip"
   },
   "catalog":
   {

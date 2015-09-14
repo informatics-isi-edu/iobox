@@ -1,7 +1,7 @@
 {
   "bag":
   {
-    "bag_path": "../temp/ppmi-amyloid-burden",
+    "bag_path": "samples/bdds/dams2bag-sample-output/ppmi-amyloid-burden",
     "bag_archiver":"zip",
     "bag_metadata":
     {
