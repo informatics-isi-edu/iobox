@@ -167,9 +167,9 @@ def export_to_bag(config):
         elif output_format == 'fetch':
             headers = {'accept': 'text/csv'}
             output_path = os.path.abspath(os.path.join(bag_path, 'fetch.txt'))
-        elif output_format == 'gofetch':
+        elif output_format == 'globusfetch':
             headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(os.path.join(bag_path, 'gofetch.txt'))
+            output_path = os.path.abspath(os.path.join(bag_path, 'globusfetch.txt'))
         else:
             print "Unsupported output type: %s" % output_format
 
