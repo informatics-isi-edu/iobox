@@ -1,0 +1,40 @@
+{
+  "bag":
+  {
+    "bag_path": "../temp/ppmi-amyloid-burden",
+    "bag_archiver":"zip",
+    "bag_metadata":
+    {
+      "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
+      "Contact-Name": "Mike D'Arcy",
+      "External-Description": "A bag containing PPMI patient summary data and links to image and genetics data for Amyloid Burden analysis.",
+      "Internal-Sender-Identifier": "USC-ISI-IRSD"
+    }
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "",
+    "password": "",
+    "queries":
+    [
+      {
+        "query_path": "/entity/A:=PPMI:PATIENT/PATNO=4117;PATNO=4116;PATNO=4108;PATNO=4105;PATNO=4100;PATNO=4051;PATNO=3551;PATNO=3448;PATNO=3445;PATNO=3444;PATNO=3443;PATNO=3436;PATNO=3435;PATNO=3433;PATNO=3431;PATNO=3430;PATNO=3429;PATNO=3418",
+        "schema_path": "/schema/PPMI/table/PATIENT",
+        "output_name": "PPMI/PATIENT",
+        "output_format": "csv"
+      },
+      {
+        "query_path": "/attribute/A:=PPMI:PATIENT/PATNO=4117;PATNO=4116;PATNO=4108;PATNO=4105;PATNO=4100;PATNO=4051;PATNO=3551;PATNO=3448;PATNO=3445;PATNO=3444;PATNO=3443;PATNO=3436;PATNO=3435;PATNO=3433;PATNO=3431;PATNO=3430;PATNO=3429;PATNO=3418/$A/S:=PATIENT_IMAGES/F:=IMAGE_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "output_name": "PPMI/IMAGES",
+        "output_format": "fetch"
+      },
+      {
+        "query_path": "/attribute/A:=PPMI:PATIENT/PATNO=4117;PATNO=4116;PATNO=4108;PATNO=4105;PATNO=4100;PATNO=4051;PATNO=3551;PATNO=3448;PATNO=3445;PATNO=3444;PATNO=3443;PATNO=3436;PATNO=3435;PATNO=3433;PATNO=3431;PATNO=3430;PATNO=3429;PATNO=3418/$A/F:=DATA_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
+        "output_name": "PPMI/BAM",
+        "output_format": "globusfetch"
+      }
+    ]
+  }
+}

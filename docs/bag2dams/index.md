@@ -12,6 +12,8 @@ the data from the BagIt package. It also loads the assets to a Hatrac store (TBD
     * pip install bagit
     * pip install requests
 
+    Note: it may be necessary to upgrade the version of the required libraries if they are already installed.  To do this, execute: `pip install --upgrade <library>`
+
 2. From the source distribution base directory, run:
     * python setup.py install
 

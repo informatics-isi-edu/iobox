@@ -11,6 +11,8 @@ The `dams2bag` utility authenticates to an ERMRest store, makes one or more enti
     * pip install bagit
     * pip install requests
 
+    Note: it may be necessary to upgrade the version of the required libraries if they are already installed.  To do this, execute: `pip install --upgrade <library>`
+
 2. From the source distribution base directory, run:
     * python setup.py install
 
