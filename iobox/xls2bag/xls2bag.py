@@ -228,8 +228,41 @@ def create_bag(inputs_js):
 def main(argv):
     if len(argv) != 2:
         sys.stderr.write("""
-    usage: python imagingmeta2csv.py <imaging-metadata-sheet.xls> <output_dir>
-    Converts the iamging metadata sheet to <output_dir>/imaging-metadata-sheet.csv 
+    usage: python xls2bag.py <xls2bag-conf.json> 
+    Converts the xls file to bag format based on worksheets and table description passed in the 
+    configiation file  <xls2bag-conf.json>. 
+    Each worksheet in the xls file can have up to two nested tables of the form 
+
+The structure for the configuration file is:
+
+{
+    "bag":
+    {
+      "bag_path":"data/test_bag"
+    },
+    "excel":
+    {
+       "xls_file": "data/xls2bag_test.xlsx",
+       "worksheets": [
+           { "worksheet":"TEST1",
+             "offset_row":"XLS2BAG_TEST",
+             "tables": [
+                 {"name":"T1",
+                  "first_column":"T11",
+                  "num_columns":3,
+                  "referenced":"T11"
+                 },
+                 {"name":"T2",
+                  "first_column":"T21",
+                  "num_columns":4,
+                  "referenced":"NULL"
+                 }
+             ]
+           }
+       ]
+    }
+}
+ 
         """)
         sys.exit(1)
 
