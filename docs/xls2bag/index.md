@@ -7,19 +7,12 @@ The Excel file can have several worksheets and each worksheet can have at most t
 | XLS2BAG_TEST |   |   |   |   |   |   | 
 |--------------|---|---|---|---|---|---|
 | A1 | A2 | A3  | B1 | B2 | B3 | B4 |
-|--------------|---|---|---|---|---|---|
 | a11 | a12 | a13 | b11 | b12 | b13 | b14 |
-|--------------|---|---|---|---|---|---|
 |     |     |     | b21 | b22 | b23 | b24 |
-|--------------|---|---|---|---|---|---|
 |     |     |     | b31 | b32 | b33 | b34 |
-|--------------|---|---|---|---|---|---|
 |     |     |     | b41 | b42 | b43 | b44 |
-|--------------|---|---|---|---|---|---|
 | a21 | a22 | a23 | b51 | b52 | b53 | b54 |
-|--------------|---|---|---|---|---|---|
 |     |     |     | b61 | b62 | b63 | b64 |
-|--------------|---|---|---|---|---|---|
 |     |     |     | b71 | b72 | b73 | b74 |
 
 In this example the worksheet has two tables. Table A and Table B. 
@@ -44,8 +37,8 @@ See below for structure of the configuration file.
     * python setup.py install
 
 ### Execution
-1. Run:
-    * xls2bag.py <path_to_configuration_file>
+1. From the xls2bag directory, run:
+    * python xls2bag.py <path_to_configuration_file>
 
 ### Structure of the xls2bag configuration file:
 The input to xls2bag.py is a JSON file. This JSON file contains a single object which has the following structure:
@@ -95,7 +88,7 @@ The input to xls2bag.py is a JSON file. This JSON file contains a single object 
     
    *   `worksheet`: The name or index of the worksheet  
 
-        Example: ```"worksheet": "Sheet Tables AB"``` or ```"worksheet": 0``` 
+        Example: ```"worksheet": "TEST 1"``` or ```"worksheet": 0``` 
         
 
    *  `offset_row`: Value in cell(N,1) meaning that the elements of the table start after row N. 
@@ -106,6 +99,8 @@ The input to xls2bag.py is a JSON file. This JSON file contains a single object 
    *   `tables`:  An array of tables constained in the worksheet. Should not have more than 2 elements. 
 
    *   `name`: Name of the table
+       Exmple" ```"A"```
+       
    *   `first_column`: Value of cell of the header for the first column of the table
    *   `num_columns`: Number of columns in the table
    *   `referenced`: Value of cell of the header for the column referenced by the child table. 
@@ -113,14 +108,14 @@ The input to xls2bag.py is a JSON file. This JSON file contains a single object 
                      must be equal to "NULL" in the child table.  
 
        Example:  
-       		 Parent table:
-                 {"name":"B",                                                                                                  
-                  "first_column":"B1",                                                                                         
-                  "num_columns":4,                                                                                              
-                  "referenced":"NULL"
+       Parent table:
+                 {"name":"A",                                                                                                  
+                  "first_column":"A1",                                                                                         
+                  "num_columns":3,                                                                                              
+                  "referenced":"A1"
                   }
     
-       		 Child table:
+       Child table:
                  {"name":"B",                                                                                                  
                   "first_column":"B1",                                                                                         
                   "num_columns":4,                                                                                              
@@ -128,4 +123,23 @@ The input to xls2bag.py is a JSON file. This JSON file contains a single object 
                   }
 
 
+With these parameters, xls2bag will create 2 CSV files under the data directory of the bag. 
 
+*   File 1: "TEST 1-A.csv" with table A
+
+A1,A2,A3 
+a11,a12,a13
+a21,a22,a23 
+
+
+*   File 2: "TEST 1-B.csv" with table B
+
+A1,B1,B2,B3,B4
+a11,b11,b12,b13,b14
+a11,b21,b22,b23,b24 
+a11,b31,b32,b33,b34 
+a11,b41,b42,b43,b44 
+a21,b51,b52,b53,b54
+a21,b61,b62,b63,b64 
+a21,b71,b72,b73,b74 
+  
