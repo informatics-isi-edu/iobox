@@ -128,18 +128,18 @@ With these parameters, xls2bag will create 2 CSV files under the data directory 
 *   File 1: "TEST 1-A.csv" with table A
 
 A1,A2,A3 
-a11,a12,a13
+a11,a12,a13 
 a21,a22,a23 
 
 
 *   File 2: "TEST 1-B.csv" with table B
 
-A1,B1,B2,B3,B4
-a11,b11,b12,b13,b14
+A1,B1,B2,B3,B4 
+a11,b11,b12,b13,b14 
 a11,b21,b22,b23,b24 
 a11,b31,b32,b33,b34 
 a11,b41,b42,b43,b44 
-a21,b51,b52,b53,b54
+a21,b51,b52,b53,b54 
 a21,b61,b62,b63,b64 
 a21,b71,b72,b73,b74 
   
