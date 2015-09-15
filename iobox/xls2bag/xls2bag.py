@@ -21,7 +21,6 @@ import os.path
 import xlrd
 import csv
 import sys
-import unicodedata
 from xlrd.sheet import ctype_text 
 
 

@@ -15,9 +15,9 @@ setup(
     maintainer='USC Information Sciences Institute ISR Division',
     maintainer_email='misd-support@isi.edu',
     version="0.1-prerelease",
-    packages=['iobox', 'iobox.bag2dams', 'iobox.dams2bag', 'iobox.sql2bag'],
+    packages=['iobox', 'iobox.bag2dams', 'iobox.dams2bag', 'iobox.sql2bag', 'iobox.xls2bag'],
     package_data={'iobox.sql2bag': ['data/*.*']},
-    scripts=['bin/sql2dams.py', 'bin/dams2bag.py', 'bin/bag2dams.py'],
+    scripts=['bin/sql2dams.py', 'bin/dams2bag.py', 'bin/bag2dams.py' , 'bin/xls2bag.py'],
     requires=[
         'bagit',
         'cookielib',
@@ -38,7 +38,8 @@ setup(
         'tarfile',
         'tempfile',
         'urlparse',
-        'xml'],
+        'xml',
+        'xlrd' ],
     license='Apache 2.0',
     classifiers=[
         'Intended Audience :: Science/Research',
