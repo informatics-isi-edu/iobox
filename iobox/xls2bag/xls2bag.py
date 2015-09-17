@@ -58,7 +58,7 @@ def get_col_index(s,irow,val):
             sys.exit(1)
 
 def format_header(val):
-    return val.replace(' ','_').lower()
+    return val.strip().replace(' ','_').lower()
 
 # It assumes that:
 #      1) if row_offset is an int, then that's the row number of the header row
