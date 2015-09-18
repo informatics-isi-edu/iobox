@@ -21,13 +21,11 @@ import os.path
 import xlrd
 import csv
 import sys
-import unicodedata
 from xlrd.sheet import ctype_text 
 
 
 def get_rowheader(s,row_offset):
-    print row_offset
-    print type(row_offset)
+    
     rowheader=-1
     if isinstance(row_offset,int): 
         rowheader=row_offset
@@ -51,7 +49,7 @@ def get_rowheader(s,row_offset):
 def get_col_index(s,irow,val):
     for icol in xrange(s.ncols):
         try: 
-            if s.cell(irow,icol).value == val:
+            if s.cell(irow,icol).value.lower() == val.lower():
                 return icol
         except Exception, e:
             sys.stderr.write("ERROR [xls2bag]: Cannot find column index with header [%s] \n" % val)
@@ -59,7 +57,7 @@ def get_col_index(s,irow,val):
             sys.exit(1)
 
 def format_header(val):
-    return val.replace(' ','_').lower()
+    return val.strip().replace(' ','_').lower()
 
 # It assumes that:
 #      1) if row_offset is an int, then that's the row number of the header row
@@ -89,7 +87,7 @@ def write_table(s,row_offset,col1,num_cols,refs,ref_col,wr):
                 head.append(format_header(refs[ref_row]))
             for colid in range(col1_index,(col1_index+num_cols)):
                 head.append(format_header(s.cell(rowid,colid).value))
-            print head
+            
             wr.writerow(head)
         else:
             row = []
@@ -140,17 +138,12 @@ def wsheet2csv(xls_file,worksheet,row_offset,tables,out_dir):
         print "ERROR [wsheet2csv] Can't handle type of passed worksheet=%s" % type(row_offset)
         sys.exit(1)
 
-    print '=== Worksheet name:',ws.name
 
     refs=[]
     for tt in tables:
         col1= tt['first_column']
         num_cols =  tt['num_columns']
         ref_col = tt['referenced']
-        print tt['name']
-        print tt['first_column']
-        print tt['num_columns']
-        print ref_col
 
         try:
             csvfile = out_dir+'/'+ws.name+'-'+tt['name']+'.csv'
@@ -208,16 +201,15 @@ def create_bag(inputs_js):
 
     print "================================================"
     print "Bag dir=%s" % bag_dir
-    print "Archiver=%s" % bag_archiver
     print "Excel File=%s" % xls_file
 
     for ws in inputs_js['excel']['worksheets']:
         worksheet = ws['worksheet']
         row_offset = ws['offset_row']
         tables = ws['tables']
-        print "worksheet=%s" % worksheet
-        print "Offset Row=%s" % row_offset
-        print "Tables=%s" % tables
+        #print "worksheet=%s" % worksheet
+        #print "Offset Row=%s" % row_offset
+        #print "Tables=%s" % tables
         wsheet2csv(xls_file,worksheet,row_offset,ws['tables'],bag_dir)
 
     print "================================================"
@@ -229,8 +221,41 @@ def create_bag(inputs_js):
 def main(argv):
     if len(argv) != 2:
         sys.stderr.write("""
-    usage: python imagingmeta2csv.py <imaging-metadata-sheet.xls> <output_dir>
-    Converts the iamging metadata sheet to <output_dir>/imaging-metadata-sheet.csv 
+    usage: python xls2bag.py <xls2bag-conf.json> 
+    Converts the xls file to bag format based on worksheets and table description passed in the 
+    configiation file  <xls2bag-conf.json>. 
+    Each worksheet in the xls file can have up to two nested tables of the form 
+
+The structure for the configuration file is:
+
+{
+    "bag":
+    {
+      "bag_path":"data/test_bag"
+    },
+    "excel":
+    {
+       "xls_file": "data/xls2bag_test.xlsx",
+       "worksheets": [
+           { "worksheet":"TEST1",
+             "offset_row":"XLS2BAG_TEST",
+             "tables": [
+                 {"name":"T1",
+                  "first_column":"T11",
+                  "num_columns":3,
+                  "referenced":"T11"
+                 },
+                 {"name":"T2",
+                  "first_column":"T21",
+                  "num_columns":4,
+                  "referenced":"NULL"
+                 }
+             ]
+           }
+       ]
+    }
+}
+ 
         """)
         sys.exit(1)
 
