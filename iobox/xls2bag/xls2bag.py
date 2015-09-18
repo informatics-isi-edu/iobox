@@ -25,8 +25,7 @@ from xlrd.sheet import ctype_text
 
 
 def get_rowheader(s,row_offset):
-    print row_offset
-    print type(row_offset)
+    
     rowheader=-1
     if isinstance(row_offset,int): 
         rowheader=row_offset
@@ -50,7 +49,7 @@ def get_rowheader(s,row_offset):
 def get_col_index(s,irow,val):
     for icol in xrange(s.ncols):
         try: 
-            if s.cell(irow,icol).value == val:
+            if s.cell(irow,icol).value.lower() == val.lower():
                 return icol
         except Exception, e:
             sys.stderr.write("ERROR [xls2bag]: Cannot find column index with header [%s] \n" % val)
@@ -88,7 +87,7 @@ def write_table(s,row_offset,col1,num_cols,refs,ref_col,wr):
                 head.append(format_header(refs[ref_row]))
             for colid in range(col1_index,(col1_index+num_cols)):
                 head.append(format_header(s.cell(rowid,colid).value))
-            print head
+            
             wr.writerow(head)
         else:
             row = []
@@ -139,17 +138,12 @@ def wsheet2csv(xls_file,worksheet,row_offset,tables,out_dir):
         print "ERROR [wsheet2csv] Can't handle type of passed worksheet=%s" % type(row_offset)
         sys.exit(1)
 
-    print '=== Worksheet name:',ws.name
 
     refs=[]
     for tt in tables:
         col1= tt['first_column']
         num_cols =  tt['num_columns']
         ref_col = tt['referenced']
-        print tt['name']
-        print tt['first_column']
-        print tt['num_columns']
-        print ref_col
 
         try:
             csvfile = out_dir+'/'+ws.name+'-'+tt['name']+'.csv'
@@ -207,16 +201,15 @@ def create_bag(inputs_js):
 
     print "================================================"
     print "Bag dir=%s" % bag_dir
-    print "Archiver=%s" % bag_archiver
     print "Excel File=%s" % xls_file
 
     for ws in inputs_js['excel']['worksheets']:
         worksheet = ws['worksheet']
         row_offset = ws['offset_row']
         tables = ws['tables']
-        print "worksheet=%s" % worksheet
-        print "Offset Row=%s" % row_offset
-        print "Tables=%s" % tables
+        #print "worksheet=%s" % worksheet
+        #print "Offset Row=%s" % row_offset
+        #print "Tables=%s" % tables
         wsheet2csv(xls_file,worksheet,row_offset,ws['tables'],bag_dir)
 
     print "================================================"
