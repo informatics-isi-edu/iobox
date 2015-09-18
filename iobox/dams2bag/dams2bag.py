@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import time
 import cookielib
 import shutil
 import os.path
@@ -135,8 +136,9 @@ def export_to_bag(config):
     print "Creating bag: %s" % bag_path
 
     if os.path.exists(bag_path):
-        print "Specified bag directory already exists -- it will be deleted"
-        shutil.rmtree(bag_path)
+        saved_bag_path = ''.join([bag_path, '_', time.strftime("%Y-%m-%d_%H.%M.%S")])
+        print "Specified bag directory already exists -- moving it to %s" % saved_bag_path
+        shutil.move(bag_path, saved_bag_path)
 
     os.makedirs(bag_path)
     bag = bagit.make_bag(bag_path, bag_metadata)
