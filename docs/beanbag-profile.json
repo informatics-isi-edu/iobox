@@ -1,38 +1,39 @@
 {
-   "BagIt-Profile-Info":{
-      "BagIt-Profile-Identifier":"http://www.bdds.org/bagitprofiles/beanbag.json",
-      "Source-Organization":"BDDS",
-      "Contact-Name":"Carl Kesselman",
-      "External-Description":"BagIt profile for packaging datasets for ERMRest/Globus Publish/BDDS",
-      "Version":"0.1"
-   },
-   "Bag-Info":{
-      "Bagging-Date":{
-         "required":true
-      },
-      "Internal-Sender-Identifier":{
-        "required":true,
-        "values":
-      },
-      "Lineage":{
-        "required":false
-        "values":[ANYURL]
-   },
-   "Manifests-Required":[
-      "md5"
-   ],
-   "Allow-Fetch.txt":true,
-   "Serialization":"optional",
-   "Accept-Serialization":[
-      "application/zip",
-   ],
-   "Accept-BagIt-Version":[
-      "0.97"
-   ]
-  "Tag-Manifests-Required":[
-    "md5"
-  ],
-  "Tag-Files-Required":[
-    "md5"
-  ]
+    "BagIt-Profile-Info":{
+        "BagIt-Profile-Identifier":"https://github.com/informatics-isi-edu/iobox/blob/master/docs/beanbag-profile.json",
+        "Source-Organization":"TBD",
+        "Contact-Name":"Carl Kesselman",
+        "External-Description":"BagIt profile for packaging self-describing datasets in text\csv along with additional data assets",
+        "Version":"0.1"
+    },
+    "Bag-Info":{
+        "Bagging-Date":{
+            "required":true
+        },
+        "Internal-Sender-Identifier":{
+            "required":true,
+            "values":
+        },
+        "Lineage":{
+            "required":false,
+            "values": ["ANYURL"]
+        },
+        "Manifests-Required":[
+            "md5"
+        ],
+        "Allow-Fetch.txt":true,
+        "Serialization":"optional",
+        "Accept-Serialization":[
+            "application/zip"
+        ],
+        "Accept-BagIt-Version":[
+            "0.97"
+        ],
+        "Tag-Manifests-Required":[
+            "md5"
+        ],
+        "Tag-Files-Required":[
+            "md5"
+        ]
+    }
 }
