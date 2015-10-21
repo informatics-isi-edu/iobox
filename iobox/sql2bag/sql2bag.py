@@ -41,6 +41,8 @@ def val2text(v):
         return v.isoformat()
     elif type(v) in [int, float, str]:
         return '%s' % str(v)
+    elif type(v) == unicode:
+        return v.encode("utf-8")
     elif type(v) == buffer:
         try:
             return '{%s}' % uuid.UUID(bytes_le=v)
