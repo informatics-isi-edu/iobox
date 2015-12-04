@@ -75,7 +75,12 @@ digraph schemata {
             # record the foreign key references as edges (add to graph later)
             for fk in table['foreign_keys']:
                 rc = fk['referenced_columns']
-                edge = dict(tail=fqname, head=rc[0]['schema_name'] + ":" + rc[0]['table_name'])
+                edge = dict(tail=fqname,
+                            head=rc[0]['schema_name'] + ":" + rc[0]['table_name'],
+                            label="(%s) -> (%s)" % (
+                                    ", ".join(fkc['column_name'] for fkc in fk['foreign_key_columns']),
+                                    ", ".join(rc['column_name'] for rc in fk['referenced_columns']) )
+                            )
                 edges.append(edge)
 
             dot += """
@@ -92,7 +97,7 @@ digraph schemata {
     edge[arrowtail=crow, arrowhead=none, dir=both, label=""];
 """
     for edge in edges:
-        dot += "    \"%(tail)s\" -> \"%(head)s\"\n" % edge
+        dot += "    \"%(tail)s\" -> \"%(head)s\" [label=\"%(label)s\"]\n" % edge
 
     # close the graph
     dot += """
