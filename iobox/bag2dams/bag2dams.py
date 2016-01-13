@@ -13,11 +13,11 @@ import bagit
 import simplejson as json
 import ordereddict
 
-requests.packages.urllib3.disable_warnings()
+#requests.packages.urllib3.disable_warnings()
 
 
 def cleanup_bag(bag_path):
-    print "Cleaning up bag dir: %s" % bag_path
+    print "Cleaning up bag dir: %s" % bag_path 
     shutil.rmtree(bag_path)
 
 
@@ -34,14 +34,24 @@ def open_session(host, user_data):
     if user_data is None:
         return
 
-    r = requests.post(url, verify=False, data=user_data)
-    if r.status_code > 203:
-        print 'Open Session Failed with Status Code: %s %s\n' % (r.status_code, r.text)
+    if user_data['password'] and user_data['username']:
+        r = requests.post(url, verify=False, data=user_data)
+        cvalue=r.cookies['ermrest']
+        if r.status_code > 203:
+            print 'Open Session Failed with Status Code: %s %s\n' % (r.status_code, r.text)
+            sys.exit(1)
+    elif user_data['cookie_value']:
+        cvalue=user_data['cookie_value']
+    else:
+        print 'No valid authentication method found to open a connection:\n' 
         sys.exit(1)
+
+    print "Cookie Value: %s\n" % cvalue
 
     c = cookielib.Cookie(version=0,
                          name='ermrest',
-                         value=r.cookies['ermrest'],
+                         #value=r.cookies['ermrest'],
+                         value=cvalue,
                          port=None,
                          port_specified=None,
                          domain=domain,
@@ -77,6 +87,38 @@ def put_file(url, input_path, headers, cookie_jar):
             raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
 
 
+
+
+
+def get_url(url, cookie_jar):
+
+    print "URL: %s \n" % url 
+    try:
+        r = requests.get(url,verify=False, cookies=cookie_jar)    
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
+
+    print r.text
+
+def test_catalog_connection(config):
+    catalog_config = config['catalog']
+    host = catalog_config['host']
+    path = catalog_config['path']
+    username = catalog_config['username']
+    password = catalog_config['password']
+    cookie_value = catalog_config['cookie_value']
+
+    if username and password:
+        cookie_jar = open_session(host, {'username': username, 'password': password , 'cookie_value': ""})
+    elif cookie_value:
+        print " ==== Found Cookie Value: %s" % cookie_value
+        cookie_jar = open_session(host, {'username': "", 'password': "" ,'cookie_value': cookie_value})
+    else:
+        cookie_jar = None
+
+    url = ''.join([host, path,'/meta'])
+    get_url(url, cookie_jar)
+
 def import_from_bag(config):
     bag_tempdir = None
     bag_config = config['bag']
@@ -86,6 +128,7 @@ def import_from_bag(config):
     path = catalog_config['path']
     username = catalog_config['username']
     password = catalog_config['password']
+    cookie_value = catalog_config['cookie_value']
 
     if not os.path.exists(bag_path):
         print("Specified bag path not found: %s" % bag_path)
@@ -147,7 +190,10 @@ def import_from_bag(config):
                 "The import process will now be aborted.")
 
         if username and password:
-            cookie_jar = open_session(host, {'username': username, 'password': password})
+            cookie_jar = open_session(host, {'username': username, 'password': password, 'cookie_value': ""})
+        elif cookie_value:
+            #print " ==== Found Cookie Value: %s" % cookie_value
+            cookie_jar = open_session(host, {'username': "", 'password': "",'cookie_value': cookie_value})
         else:
             cookie_jar = None
 
@@ -181,11 +227,18 @@ def main(argv):
         sys.stderr.write("""
 usage: python bag2dams.py <config_file>
 where <config_file> is the full path to the JSON file containing the configuration that will be used to upload
-entities and assets to the DAMS \n
+entities and assets to the DAMS. Authentication can be either via session username and password or via 
+passing a value of a valid ermrest (browser) cookie for goauth aunthentication. If username and password values are 
+passed it assumes local session authent. If username and password are empty and cookie value is not empty 
+then it uses the passed value to construct a valid cookie. \n
 """)
         sys.exit(1)
 
+
     import_from_bag(read_config(argv[1]))
+
+    #test_catalog_connection(read_config(argv[1]))
+
     sys.exit(0)
 
 

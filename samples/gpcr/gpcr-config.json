@@ -9,7 +9,23 @@
         "dns": "gpcr",
         "database_name":"rce",
         "user_name":"sa",
-        "db_password":"_gpcr2015!_"
+        "db_password":"*********"
+    },
+    "catalog":
+    {
+        "host": "https://gpcr-dev.misd.isi.edu",
+	"path": "/ermrest/catalog/1",
+	"username": "",
+	"password": "",
+        "cookie_value": "y8hGPqvG0XvaxpLyCQ8NSpe9",
+	"entities":
+	[
+	    {
+		"entity_path": "/entity/PPMI:BRAINMORPHSIGVEC",
+		"input_path": "PPMI/BRAINMORPHSIGVEC.csv",
+		"input_format": "csv"
+	    }
+	]
     },
     "extracts": [
          { "query_file" : "gpcr_example/CleavageSite.sql",
