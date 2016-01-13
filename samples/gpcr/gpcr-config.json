@@ -1,7 +1,7 @@
 {
     "bag":
     {
-        "bag_path":"gpcr_example/gpcr_bag"
+        "bag_path":"gpcr_bag"
     },
     "mssql_server":
     {
@@ -17,121 +17,127 @@
 	"path": "/ermrest/catalog/1",
 	"username": "",
 	"password": "",
-        "cookie_value": "y8hGPqvG0XvaxpLyCQ8NSpe9",
+        "cookie_value": "DzUDSusP265obwlEOFpNbOvm",
 	"entities":
 	[
 	    {
-		"entity_path": "/entity/PPMI:BRAINMORPHSIGVEC",
-		"input_path": "PPMI/BRAINMORPHSIGVEC.csv",
+		"entity_path": "",
+		"input_path": "",
 		"input_format": "csv"
 	    }
 	]
     },
     "extracts": [
-         { "query_file" : "gpcr_example/CleavageSite.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/targetlist.sql",
+	   "schema_name": "iobox_data",
+	   "table_name" : "targetlist",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_iobox/cleavagesite.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "cleavagesite",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Host.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/host.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "host",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Insertion.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/insertion.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "insertion",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Mutations.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/mutations.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "mutations",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Organism.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/organism.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "organism",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Status.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/status.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "status",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Strain.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/strain.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "strain",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/TagCterm.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/tagcterm.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "tagcterm",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/TagNterm.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/tagnterm.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "tagnterm",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Target.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/target.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "target",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Truncations.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/truncations.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "truncations",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/UserList.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/userlist.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "userlist",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Vector.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/vector.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "vector",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/Construct.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/construct.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "construct",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/VirusProduction.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/virusproduction.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "virusproduction",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/BiomassProdBatch.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/biomassprodbatch.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "biomassprodbatch",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/MembranePrep.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/membraneprep.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "membraneprep",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
 	 },
-         { "query_file" : "gpcr_example/ParentsOfMembranePreps.sql",
-	   "schema_name": "legacy",
+         { "query_file" : "gpcr_iobox/parentsofmembranepreps.sql",
+	   "schema_name": "iobox_data",
 	   "table_name" : "parentsofmembranepreps",
 	   "bulk_data_columns" : [],
 	   "unique_key_columns": ["id"]
