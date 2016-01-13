@@ -9,8 +9,8 @@ import json
 import shutil 
 import bagit
 
-from dams2bag.dams2bag import archive_bag
-from dams2bag.dams2bag import cleanup_bag
+from iobox.dams2bag.dams2bag import archive_bag
+from iobox.dams2bag.dams2bag import cleanup_bag
 
 
 
