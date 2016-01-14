@@ -72,11 +72,13 @@ def open_session(host, user_data):
 
 
 def put_file(url, input_path, headers, cookie_jar):
+    stat = 0
     if input_path:
         try:
             with open(input_path, 'rb') as data_file:
                 r = requests.put(url, data=data_file, headers=headers, verify=False, cookies=cookie_jar)
                 if r.status_code != 200:
+                    stat += 1
                     print 'HTTP PUT Failed for url: %s' % url
                     print "Host %s responded:\n" % urlparse.urlsplit(url).netloc
                     print r.text
@@ -86,7 +88,7 @@ def put_file(url, input_path, headers, cookie_jar):
         except requests.exceptions.RequestException as e:
             raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
 
-
+        return stat
 
 
 
@@ -118,6 +120,24 @@ def test_catalog_connection(config):
 
     url = ''.join([host, path,'/meta'])
     get_url(url, cookie_jar)
+
+
+def test_entities(cfg):
+    config = read_config(cfg)
+    catalog_config = config['catalog']
+    bag_config = config['bag']
+    bag_path = os.path.abspath(bag_config['bag_path'])
+    host = catalog_config['host']
+    path = catalog_config['path']
+
+    for entity in catalog_config['entities']:
+        url = ''.join([host, path, entity['entity_path']])
+        input_path = os.path.abspath(os.path.join(bag_path, 'data', entity['input_path']))
+        input_format = entity['input_format']
+
+        print "=== URL: %s\n" % url
+
+
 
 def import_from_bag(cfg):
     config = read_config(cfg)
@@ -189,6 +209,7 @@ def import_from_bag(cfg):
             raise RuntimeError(
                 "One or more specified input files were not found in the bag payload. "
                 "The import process will now be aborted.")
+            sys.exit(2)
 
         if username and password:
             cookie_jar = open_session(host, {'username': username, 'password': password, 'cookie_value': ""})
@@ -210,7 +231,10 @@ def import_from_bag(cfg):
                 print "Unsupported input type: %s" % input_format
                 continue
 
-            put_file(url, input_path, headers, cookie_jar)
+            status = put_file(url, input_path, headers, cookie_jar)
+
+            if status > 0:
+                sys.exit(1)
 
     except RuntimeError as re:
         print "Fatal runtime error:", re
@@ -235,11 +259,7 @@ then it uses the passed value to construct a valid cookie. \n
 """)
         sys.exit(1)
 
-
-    import_from_bag(read_config(argv[1]))
-
-    #test_catalog_connection(read_config(argv[1]))
-
+    import_from_bag(argv[1])
     sys.exit(0)
 
 
