@@ -6,7 +6,7 @@
     "mssql_server":
     {
         "server_name":"bugacov.isi.edu",
-        "dns": "gpcr",
+        "dns": "gpcr_test",
         "database_name":"rce",
         "user_name":"sa",
         "db_password":"*********"
@@ -17,15 +17,86 @@
 	"path": "/ermrest/catalog/1",
 	"username": "",
 	"password": "",
-        "cookie_value": "DzUDSusP265obwlEOFpNbOvm",
-	"entities":
-	[
-	    {
-		"entity_path": "",
-		"input_path": "",
-		"input_format": "csv"
-	    }
-	]
+        "cookie_value": "*****************",
+        "entities":
+        [
+         { "input_path": "iobox_data/targetlist.csv",
+           "entity_path": "/entity/iobox_data:targetlist",
+           "input_format": "csv"
+         },
+         { "input_path": "iobox_data/cleavagesite.sql",
+	   "entity_path": "/entity/iobox_data:cleavagesite",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/host.sql",
+	   "entity_path": "/entity/iobox_data:host",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/insertion.sql",
+	   "entity_path": "/entity/iobox_data:insertion",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/mutations.sql",
+	   "entity_path": "/entity/iobox_data:mutations",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/organism.sql",
+	   "entity_path": "/entity/iobox_data:organism",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/status.sql",
+	   "entity_path": "/entity/iobox_data:status",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/strain.sql",
+	   "entity_path": "/entity/iobox_data:strain",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/tagcterm.sql",
+	   "entity_path": "/entity/iobox_data:tagcterm",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/tagnterm.sql",
+	   "entity_path": "/entity/iobox_data:tagnterm",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/target.sql",
+	   "entity_path": "/entity/iobox_data:target",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/truncations.sql",
+	   "entity_path": "/entity/iobox_data:truncations",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/userlist.sql",
+	   "entity_path": "/entity/iobox_data:userlist",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/vector.sql",
+	   "entity_path": "/entity/iobox_data:vector",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/construct.sql",
+	   "entity_path": "/entity/iobox_data:construct",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/virusproduction.sql",
+	   "entity_path": "/entity/iobox_data:virusproduction",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/biomassprodbatch.sql",
+	   "entity_path": "/entity/iobox_data:biomassprodbatch",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/membraneprep.sql",
+	   "entity_path": "/entity/iobox_data:membraneprep",
+	   "input_format": "csv"
+	 },
+         { "input_path": "iobox_data/parentsofmembranepreps.sql",
+	   "entity_path": "/entity/iobox_data:parentsofmembranepreps",
+	   "input_format": "csv"
+	 }
+        ]
     },
     "extracts": [
          { "query_file" : "gpcr_iobox/targetlist.sql",

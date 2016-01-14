@@ -23,36 +23,58 @@ from iobox.bag2dams import bag2dams
 
 if __name__ == "__main__":
     
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 2:
         sys.stderr.write(""" 
-usage: iobox_sql2dams.py <input_file.js> <temp_bag_folder>
+usage: iobox_sql2dams.py <input_file.js> 
 
 <input_file.js>: reads input from <input_file.js> file. See below for format example. 
-<temp_bag_folder>: local directory where extracted data will be teporarily saved before loading to DAMS 
  
 input_file.js example:
+
 {
-    "SERVER_NAME":"mssql_server.isi.edu",
-    "DNS": "gpcr",
-    "DATABASE_NAME":"rce",
-    "USER_NAME":"sa",
-    "DB_PASSWORD":"********",
-    "DESTINATION_SERVER_NAME":"vm-dev-029.misd.isi.edu",
-    "DESTINATION_USER_NAME":"gpcr1",
-    "DESTINATION_PASSWORD":"*******",
-    "EXTRACTS": [
-        { "query_file" : "gpcr_example/Status.sql",
-           "schema_name": "gpcr_new",
-           "table_name" : "Status",
-           "bulk_data_columns" : [],
-           "unique_key_columns": ["id"]
+    "bag":
+    {
+        "bag_path":"gpcr_bag"
+    },
+    "mssql_server":
+    {
+        "server_name":"bugacov.isi.edu",
+        "dns": "gpcr_test",
+        "database_name":"rce",
+        "user_name":"sa",
+        "db_password":"*********"
+    },
+    "catalog":
+    {
+        "host": "https://gpcr-dev.misd.isi.edu",
+	"path": "/ermrest/catalog/1",
+	"username": "",
+	"password": "",
+        "cookie_value": "*****************",
+        "entities":
+        [
+         { "input_path": "iobox_data/targetlist.csv",
+           "entity_path": "/entity/iobox_data:targetlist",
+           "input_format": "csv"
          },
-         { "query_file" : "gpcr_example/Strain.sql",
-           "schema_name": "gpcr_new",
-           "table_name" : "Strain",
-           "bulk_data_columns" : [],
-           "unique_key_columns": ["id"]
-         }
+         { "input_path": "iobox_data/cleavagesite.sql",
+	   "entity_path": "/entity/iobox_data:cleavagesite",
+	   "input_format": "csv"
+	 }
+    },
+    "extracts": [
+         { "query_file" : "gpcr_iobox/targetlist.sql",
+	   "schema_name": "iobox_data",
+	   "table_name" : "targetlist",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 },
+         { "query_file" : "gpcr_iobox/cleavagesite.sql",
+	   "schema_name": "iobox_data",
+	   "table_name" : "cleavagesite",
+	   "bulk_data_columns" : [],
+	   "unique_key_columns": ["id"]
+	 }
     ]
 }
 
@@ -63,8 +85,6 @@ input_file.js example:
         sys.exit(1)
 
     inputs_js= json.loads(open(sys.argv[1]).read())
-
-    bag_tmp=sys.argv[2]
-    bag = sql2bag.create_bag(inputs_js,bag_tmp) 
-    bag2dams.load_bag_csv(sys.argv[1],bag_tmp)
-
+    bag = sql2bag.create_bag(inputs_js) 
+    bag2dams.import_from_bag(sys.argv[1])
+    sys.exit(0)

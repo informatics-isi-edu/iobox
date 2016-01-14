@@ -163,6 +163,8 @@ def create_bag(inputs_js):
     bag_dir, ba  = os.path.splitext(inputs_js['bag']['bag_path'])
 
     bag_archiver = ba.replace('.','').lower()
+    if bag_archiver not in ('tar','tgz','bz2','zip'):
+        bag_archiver = None
 
     if os.path.exists(bag_dir):
         print "Passed bag directory [%s] already exists....deleting it...." % bag_dir
@@ -220,12 +222,9 @@ def create_bag(inputs_js):
     if bag_archiver is not None:
         try:
             archive_bag(bag_dir, bag_archiver.lower())
-        except Exception as e:
-            print "Unexpected error while creating data bag archive:", e
-            raise SystemExit(1)
-        finally:
             cleanup_bag(bag_dir)
-
+        except RuntimeError:
+            print "Cannot zip bag, will leave bag unzipped....."
 
     return bag
 

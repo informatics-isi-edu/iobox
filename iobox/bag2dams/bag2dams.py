@@ -119,7 +119,8 @@ def test_catalog_connection(config):
     url = ''.join([host, path,'/meta'])
     get_url(url, cookie_jar)
 
-def import_from_bag(config):
+def import_from_bag(cfg):
+    config = read_config(cfg)
     bag_tempdir = None
     bag_config = config['bag']
     bag_path = os.path.abspath(bag_config['bag_path'])
