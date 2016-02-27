@@ -1,0 +1,30 @@
+{
+  "bag":
+  {
+    "bag_path": "samples/bdds/dams2bag-sample-output/ppmi-sample-1",
+    "bag_update":"true",
+    "bag_metadata":
+    {
+      "Source-Organization": "USC Information Sciences Institute, Informatics Systems Research Division",
+      "Contact-Name": "Mike D'Arcy",
+      "External-Description": "A bag containing PPMI patient summary data and links to images (via fetch.txt) matching the following properties: enrolled, parkinson's, mci, fncdtcog",
+      "Internal-Sender-Identifier": "USC-ISI-IRSD"
+    }
+  },
+  "catalog":
+  {
+    "host": "https://misd-vm-12.isi.edu",
+    "path": "/ermrest/catalog/1",
+    "username": "",
+    "password": "",
+    "queries":
+    [
+      {
+        "query_path": "/attribute/A:=PPMI:PATIENT/ENROLL_STATUS=Enrolled/APPRDX=Parkinson%27s%20disease/COGSTATE=Mild%20Cognitive%20Impairment%20%28PD-MCI%29/FNCDTCOG=Yes/$A/F:=DATA_FILES/url:=F:uri,length:=F:bytes,filename:=F:filepath,sha256:=F:sha256sum",
+        "output_path": "PPMI/BAM",
+        "output_name": "bam-fetch-manifest",
+        "output_format": "fetch"
+      }
+    ]
+  }
+}

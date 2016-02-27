@@ -22,13 +22,13 @@
       {
         "query_path": "/entity/PPMI:PATIENT/PATNO=3616",
         "schema_path": "/schema/PPMI/table/PATIENT",
-        "output_name": "PPMI/PATIENT",
+        "output_path": "PPMI/PATIENT",
         "output_format": "csv"
       },
       {
-        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3616/S:=PATIENT_IMAGES/F:=IMAGE_FILES/URL:=F:uri,LENGTH:=F:bytes,FILENAME:=F:filepath",
-        "output_name": "PPMI/IMAGES",
-        "output_format": "prefetch"
+        "query_path": "/attribute/P:=PPMI:PATIENT/PATNO=3616/S:=PATIENT_IMAGES/F:=IMAGE_FILES/url:=F:uri,length:=F:bytes,filename:=F:filepath,sha256:=sha256sum",
+        "output_path": "PPMI/IMAGES",
+        "output_format": "fetch"
       }
     ]
   }

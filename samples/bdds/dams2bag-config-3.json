@@ -21,7 +21,7 @@
     [
       {
         "query_path": "/entity/PPMI:BRAINMORPHSIGVEC",
-        "output_name": "PPMI/BRAINMORPHSIGVEC",
+        "output_path": "PPMI/BRAINMORPHSIGVEC",
         "output_format": "csv"
       }
     ]
