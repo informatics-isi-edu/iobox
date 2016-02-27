@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+import logging
 import time
 import cookielib
 import shutil
@@ -15,11 +16,19 @@ import simplejson as json
 import ordereddict
 
 CHUNK_SIZE = 1024 * 1024
-requests.packages.urllib3.disable_warnings()
+logger = logging.getLogger(__name__)
+
+
+def configure_logging(level=logging.INFO, logpath=None):
+    log_format = "%(asctime)s - %(levelname)s - %(message)s"
+    if logpath:
+        logging.basicConfig(filename=logpath, level=level, format=log_format)
+    else:
+        logging.basicConfig(level=level, format=log_format)
 
 
 def cleanup_bag(bag_path):
-    print "Cleaning up bag dir: %s" % bag_path
+    logger.info("Cleaning up bag dir: %s" % bag_path)
     shutil.rmtree(bag_path)
 
 
@@ -38,9 +47,9 @@ def open_session(host, user_data):
 
     r = requests.post(url, verify=False, data=user_data)
     if r.status_code > 203:
-        print 'Open Session Failed with Status Code: %s %s\n' % (r.status_code, r.text)
-        sys.exit(1)
-
+        raise RuntimeError('Open Session Failed with Status Code: %s %s\n' % (r.status_code, r.text))
+    else:
+        logger.info("Session established: %s", url)
     c = cookielib.Cookie(version=0,
                          name='ermrest',
                          value=r.cookies['ermrest'],
@@ -71,22 +80,21 @@ def get_file(url, output_path, headers, cookie_jar):
                 os.makedirs(output_dir)
             r = requests.get(url, headers=headers, stream=True, verify=False, cookies=cookie_jar)
             if r.status_code != 200:
-                print 'HTTP GET Failed for url: %s' % url
-                print "Host %s responded:\n" % urlparse.urlsplit(url).netloc
-                print r.text
+                logger.error('HTTP GET Failed for url: %s' % url)
+                logger.error("Host %s responded:\n\n%s" % (urlparse.urlsplit(url).netloc,  r.text))
                 raise RuntimeError('File [%s] transfer failed. ' % output_path)
             else:
                 with open(output_path, 'wb') as data_file:
                     for chunk in r.iter_content(CHUNK_SIZE):
                         data_file.write(chunk)
                     data_file.flush()
-                print 'File [%s] transfer successful.' % output_path
+                logger.info('File [%s] transfer successful.' % output_path)
         except requests.exceptions.RequestException as e:
             raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
 
 
 def archive_bag(bag_path, bag_archiver):
-    print "Archiving bag (%s): %s" % (bag_archiver, bag_path)
+    logger.info("Archiving bag (%s): %s" % (bag_archiver, bag_path))
 
     tarmode = None
     archive = None
@@ -119,29 +127,46 @@ def archive_bag(bag_path, bag_archiver):
         t.close()
         archive = t.name
 
-    print 'Created bag archive: %s' % archive
+    logger.info('Created bag archive: %s' % archive)
 
 
-def export_to_bag(config):
-    bag_config = config['bag']
-    bag_path = os.path.abspath(bag_config['bag_path'])
-    bag_archiver = bag_config.get('bag_archiver', None)
-    bag_metadata = bag_config.get('bag_metadata', None)
-    catalog_config = config['catalog']
-    host = catalog_config['host']
-    path = catalog_config['path']
-    username = catalog_config['username']
-    password = catalog_config['password']
+def export_to_bag(config_file, quiet=False):
 
-    print "Creating bag: %s" % bag_path
+    if quiet:
+        requests.packages.urllib3.disable_warnings()
+    configure_logging(logging.WARN if quiet else logging.INFO)
+    logger.info("Reading config file: %s" % config_file)
 
-    if os.path.exists(bag_path):
+    try:
+        config = read_config(config_file)
+        bag_config = config['bag']
+        bag_path = os.path.abspath(bag_config['bag_path'])
+        bag_archiver = bag_config.get('bag_archiver', None)
+        bag_metadata = bag_config.get('bag_metadata', {})
+        bag_update = bag_config.get('bag_update', False)
+        catalog_config = config['catalog']
+        host = catalog_config['host']
+        path = catalog_config['path']
+        username = catalog_config['username']
+        password = catalog_config['password']
+    except Exception as e:
+        raise RuntimeError('Error parsing configuration: %s' % e)
+
+    if 'Bag-Software-Agent' not in bag_metadata:
+        bag_metadata['Bag-Software-Agent'] = 'bagit.py <http://github.com/ini-bdds/bagit-python>'
+
+    if os.path.exists(bag_path) and not bag_update:
         saved_bag_path = ''.join([bag_path, '_', time.strftime("%Y-%m-%d_%H.%M.%S")])
-        print "Specified bag directory already exists -- moving it to %s" % saved_bag_path
+        logger.warn("Specified bag directory already exists -- moving it to %s" % saved_bag_path)
+        logger.info("An existing bag may be updated by setting the parameter "
+                    "\"bag_update\" to True in the \"bag\" section of the configuration file. ")
         shutil.move(bag_path, saved_bag_path)
 
-    os.makedirs(bag_path)
-    bag = bagit.make_bag(bag_path, bag_metadata)
+    if not os.path.exists(bag_path):
+        os.makedirs(bag_path)
+        bag = bagit.make_bag(bag_path, bag_metadata, 1, ['sha256'])
+    else:
+        bag = bagit.Bag(bag_path)
 
     if username and password:
         cookie_jar = open_session(host, {'username': username, 'password': password})
@@ -150,49 +175,49 @@ def export_to_bag(config):
 
     for query in catalog_config['queries']:
         url = ''.join([host, path, query['query_path']])
-        output_name = query['output_name']
+        output_name = query.get('output_name', None)
+        output_path = query['output_path']
         output_format = query['output_format']
         schema_path = query.get('schema_path', None)
-        schema_output_path = os.path.abspath(os.path.join(bag_path, 'data', ''.join([output_name, '-schema.json'])))
-
-        if output_format == 'csv':
-            headers = {'accept': 'text/csv'}
-            output_name = ''.join([output_name, '.csv'])
-            output_path = os.path.abspath(os.path.join(bag_path, 'data', output_name))
-        elif output_format == 'json':
-            headers = {'accept': 'application/json'}
-            output_name = ''.join([output_name, '.json'])
-            output_path = os.path.abspath(os.path.join(bag_path, 'data', output_name))
-        elif output_format == 'prefetch':
-            headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(os.path.join(bag_path, 'prefetch.txt'))
-        elif output_format == 'fetch':
-            headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(os.path.join(bag_path, 'fetch.txt'))
-        elif output_format == 'globusfetch':
-            headers = {'accept': 'text/csv'}
-            output_path = os.path.abspath(os.path.join(bag_path, 'globusfetch.txt'))
-        else:
-            print "Unsupported output type: %s" % output_format
+        schema_output_path = os.path.abspath(os.path.join(bag_path, 'data', ''.join([output_path, '-schema.json'])))
 
         try:
-            get_file(url, output_path, headers, cookie_jar)
+            if output_format == 'csv':
+                headers = {'accept': 'text/csv'}
+                output_path = ''.join([os.path.join(output_path, output_name) if output_name else output_path, '.csv'])
+                output_dir = os.path.abspath(os.path.join(bag_path, 'data', output_path))
+            elif output_format == 'json':
+                headers = {'accept': 'application/json'}
+                output_path = ''.join([os.path.join(output_path, output_name) if output_name else output_path, '.json'])
+                output_dir = os.path.abspath(os.path.join(bag_path, 'data', output_path))
+            elif output_format == 'prefetch':
+                headers = {'accept': 'text/csv'}
+                output_dir = os.path.abspath(
+                    ''.join([os.path.join(bag_path, output_name) if output_name else 'prefetch-manifest', '.txt']))
+            elif output_format == 'fetch':
+                headers = {'accept': 'text/csv'}
+                output_dir = os.path.abspath(
+                    ''.join([os.path.join(bag_path, output_name) if output_name else 'fetch-manifest', '.txt']))
+            else:
+                raise RuntimeError("Unsupported output type: %s" % output_format)
+
+            get_file(url, output_dir, headers, cookie_jar)
 
             if schema_path:
                 schema_url = ''.join([host, path, schema_path])
                 get_file(schema_url, schema_output_path, {'accept': 'application/json'}, cookie_jar)
 
             if output_format == 'prefetch':
-                print "Prefetching file(s)..."
-                with open(output_path, 'rb') as csv_in:
+                logger.info("Prefetching file(s)...")
+                with open(output_dir, 'rb') as csv_in:
                     reader = csv.DictReader(csv_in)
                     try:
                         for row in reader:
-                            prefetch_url = row['URL']
-                            prefetch_length = int(row['LENGTH'])
+                            prefetch_url = row['url']
+                            prefetch_length = int(row['length'])
                             prefetch_filename = \
-                                os.path.abspath(os.path.join(bag_path, 'data', output_name, row['FILENAME']))
-                            print "Prefetching %s as %s" % (prefetch_url, prefetch_filename)
+                                os.path.abspath(os.path.join(bag_path, 'data', output_path, row['filename']))
+                            logger.info("Prefetching %s as %s" % (prefetch_url, prefetch_filename))
                             get_file(prefetch_url, prefetch_filename, headers, cookie_jar)
                             file_bytes = os.path.getsize(prefetch_filename)
                             if prefetch_length != file_bytes:
@@ -200,57 +225,62 @@ def export_to_bag(config):
                                                    (prefetch_length, file_bytes, prefetch_filename))
                     finally:
                         csv_in.close()
-                        os.remove(output_path)
+                        os.remove(output_dir)
 
-            elif output_format == 'fetch' or output_format == 'globusfetch':
-                print "Writing %s..." % output_path
-                new_csv_file = ''.join([output_path, '.tmp'])
-                csv_in = open(output_path, 'rb')
-                csv_out = open(new_csv_file, 'wb')
+            elif output_format == 'fetch':
+                logger.info("Adding remote file references from %s" % output_dir)
+                csv_in = open(output_dir, 'rb')
                 reader = csv.DictReader(csv_in)
-                writer = csv.DictWriter(csv_out, reader.fieldnames, delimiter='\t')
-                writer.writerow(dict((fn, fn) for fn in reader.fieldnames))  # for 2.6 support since no writeheader
                 for row in reader:
-                    row['FILENAME'] = ''.join(['data', '/', output_name, '/', row['FILENAME']])
-                    writer.writerow(row)
+                    row['filename'] = ''.join(['data', '/', output_path, '/', row['filename']])
+                    checksums = ['md5', 'sha1', 'sha256', 'sha512']
+                    for checksum in checksums:
+                        # url, length, filename, alg, digest
+                        if checksum in row:
+                            bag.add_remote_file(
+                                row['url'], row['length'], row['filename'], checksum, row[checksum])
                 csv_in.close()
-                csv_out.close()
-                os.remove(output_path)
-                os.rename(new_csv_file, output_path)
+                os.remove(output_dir)
 
         except RuntimeError as e:
-            print "Fatal runtime error:", e
-            cleanup_bag(bag_path)
-            raise SystemExit(1)
+            logger.fatal("Fatal runtime error: %s", e)
+            if not bag_update:
+                cleanup_bag(bag_path)
+            raise e
 
     try:
-        print "Updating bag manifests..."
-        bag.save(manifests=True)
-        print "Validating bag..."
-        bag.validate()
-        print 'Created valid data bag: %s' % bag_path
+        logger.info("Updating bag manifests...")
+        bag.save(1, manifests=True)
+    except Exception as e:
+        logger.fatal("Exception while updating bag manifests: %s", e)
+        if not bag_update:
+            cleanup_bag(bag_path)
+        raise e
 
+    logger.info('Created bag: %s' % bag_path)
+
+    try:
+        logger.info("Validating bag...")
+        bag.validate(1, fast=False)
+        logger.info('Bag validated successfully: %s' % bag_path)
+    except bagit.BagIncompleteError as e:
+        logger.warn("BagIncompleteError: %s %s", e,
+                    "This validation error may be transient if the bag contains unresolved remote file references "
+                    "from a fetch.txt file. In this case the bag is incomplete but not necessarily invalid. ")
     except bagit.BagValidationError as e:
-        print "BagValidationError:", e
+        logger.warn("BagValidationError: %s", e)
         for d in e.details:
             if isinstance(d, bagit.ChecksumMismatch):
-                print "Bag %s was expected to have %s checksum of %s but found %s" % \
-                      (d.path, d.algorithm, d.expected, d.found)
-                cleanup_bag(bag_path)
-                raise SystemExit(1)
-    except Exception as e:
-        print "Unhandled exception while validating bag:", e
-        cleanup_bag(bag_path)
-        raise SystemExit(1)
+                logger.warn("Bag %s was expected to have %s checksum of %s but found %s" %
+                            (d.path, d.algorithm, d.expected, d.found))
 
     if bag_archiver is not None:
         try:
             archive_bag(bag_path, bag_archiver.lower())
-        except Exception as e:
-            print "Unexpected error while creating data bag archive:", e
-            raise SystemExit(1)
-        finally:
             cleanup_bag(bag_path)
+        except Exception as e:
+            logger.error("Unexpected error while creating data bag archive:", e)
+            raise e
 
     return bag
 
@@ -263,9 +293,12 @@ where <config_file> is the full path to the JSON file containing the configurati
 from the DAMS \n
 """)
         sys.exit(1)
-
-    export_to_bag(read_config(argv[1]))
-    sys.exit(0)
+    try:
+        export_to_bag(argv[1])
+        sys.exit(0)
+    except Exception as e:
+        print e
+        sys.exit(1)
 
 
 if __name__ == '__main__':
