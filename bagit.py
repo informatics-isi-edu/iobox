@@ -443,8 +443,13 @@ class Bag(object):
         if not isfile(fetch_file_path):
             with open(fetch_file_path, 'w') as fetch_file:
                 fetch_file.write("URL\tLENGTH\tFILENAME\n")
-                for filename, values in self.remote_files.iteritems():
-                    fetch_file.write("%s\t%s\t%s\n" % (values['url'], values['length'], filename))
+                remote_filenames = self.remote_files.keys()
+                remote_filenames.sort()
+                for filename in remote_filenames:
+                    fetch_file.write("%s\t%s\t%s\n" %
+                                     (self.remote_files[filename]['url'],
+                                      self.remote_files[filename]['length'],
+                                      filename))
             fetch_file.close()
         else:
             with open(temp_fetch_file_path, 'w') as fetch_file:
@@ -462,8 +467,13 @@ class Bag(object):
                         if entry_path in payload_entries:
                             self.add_remote_file(url, length, filename, alg, payload_entries[entry_path][alg])
                 fetch_file.write("URL\tLENGTH\tFILENAME\n")
-                for filename, values in fetch_files.iteritems():
-                    fetch_file.write("%s\t%s\t%s\n" % (values['url'], values['length'], filename))
+                fetch_filenames = fetch_files.keys()
+                fetch_filenames.sort()
+                for filename in fetch_filenames:
+                    fetch_file.write("%s\t%s\t%s\n" %
+                                     (fetch_files[filename]['url'],
+                                      fetch_files[filename]['length'],
+                                      filename))
             fetch_file.close()
             os.remove(fetch_file_path)
             os.rename(temp_fetch_file_path, fetch_file_path)
@@ -828,12 +838,14 @@ def _make_manifest(manifest_file, data_dir, processes, algorithm='md5', remote_f
             total_bytes += byte_count
             manifest.write("%s  %s\n" % (digest, _encode_filename(filename)))
 
-        for filename, values in remote_files.iteritems():
-            if algorithm != values['alg']:
+        remote_filenames = remote_files.keys()
+        remote_filenames.sort()
+        for filename in remote_filenames:
+            if algorithm != remote_files[filename]['alg']:
                 continue
             num_files += 1
-            total_bytes += values['length']
-            manifest.write("%s  %s\n" % (values['digest'], _encode_filename(filename)))
+            total_bytes += remote_files[filename]['length']
+            manifest.write("%s  %s\n" % (remote_files[filename]['digest'], _encode_filename(filename)))
 
         manifest.close()
         return "%s.%s" % (total_bytes, num_files)
