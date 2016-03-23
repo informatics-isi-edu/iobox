@@ -259,26 +259,3 @@ def import_from_bag(config_file, quiet=False):
     finally:
         if bag_tempdir and os.path.exists(bag_tempdir):
             cleanup_bag(bag_tempdir)
-
-
-def main(argv):
-    if len(argv) != 2:
-        sys.stderr.write("""
-usage: python bag2dams.py <config_file>
-where <config_file> is the full path to the JSON file containing the configuration that will be used to upload
-entities and assets to the DAMS. Authentication can be either via session username and password or via 
-passing a value of a valid ermrest (browser) cookie for goauth authentication. If username and password values are
-passed it assumes local session authentication. If username and password are empty and cookie value is not empty
-then it uses the passed value to construct a valid cookie. \n
-""")
-        sys.exit(1)
-
-    try:
-        import_from_bag(argv[1])
-        sys.exit(0)
-    except Exception as e:
-        print e
-        sys.exit(1)
-
-if __name__ == '__main__':
-    main(sys.argv)

@@ -16,8 +16,27 @@
 #
 
 import sys
-import iobox
 from iobox.bag2dams import bag2dams
 
+
+def main(argv):
+    if len(argv) != 2:
+        sys.stderr.write("""
+usage: python bag2dams.py <config_file>
+where <config_file> is the full path to the JSON file containing the configuration that will be used to upload
+entities and assets to the DAMS. Authentication can be either via session username and password or via
+passing a value of a valid ermrest (browser) cookie for goauth authentication. If username and password values are
+passed it assumes local session authentication. If username and password are empty and cookie value is not empty
+then it uses the passed value to construct a valid cookie. \n
+""")
+        sys.exit(1)
+
+    try:
+        bag2dams.import_from_bag(argv[1])
+        sys.exit(0)
+    except Exception as e:
+        print e
+        sys.exit(1)
+
 if __name__ == '__main__':
-    bag2dams.main(sys.argv)
+    main(sys.argv)

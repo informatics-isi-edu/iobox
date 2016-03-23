@@ -1,6 +1,0 @@
-build
-dist
-bagit_profile.egg-info
-bagit_profile.pyc
-*.log
-test.pyc

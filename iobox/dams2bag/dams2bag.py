@@ -284,22 +284,3 @@ def export_to_bag(config_file, quiet=False):
 
     return bag
 
-
-def main(argv):
-    if len(argv) != 2:
-        sys.stderr.write("""
-usage: python dams2bag.py <config_file>
-where <config_file> is the full path to the JSON file containing the configuration that will be used to download assets
-from the DAMS \n
-""")
-        sys.exit(1)
-    try:
-        export_to_bag(argv[1])
-        sys.exit(0)
-    except Exception as e:
-        print e
-        sys.exit(1)
-
-
-if __name__ == '__main__':
-    main(sys.argv)
