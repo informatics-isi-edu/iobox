@@ -16,6 +16,7 @@ import ordereddict
 
 logger = logging.getLogger(__name__)
 
+CHUNK_SIZE = 1024 * 1024
 
 def configure_logging(level=logging.INFO, logpath=None):
     log_format = "%(asctime)s - %(levelname)s - %(message)s"
@@ -83,12 +84,14 @@ def put_file(url, input_path, headers, cookie_jar):
     if input_path:
         try:
             with open(input_path, 'rb') as data_file:
-                r = requests.put(url, data=data_file, headers=headers, verify=False, cookies=cookie_jar)
+                r = requests.put(url, data=data_file, headers=headers, stream=True, verify=False, cookies=cookie_jar)
                 if r.status_code != 200:
                     logger.error('HTTP PUT Failed for url: %s' % url)
                     logger.error("Host %s responded:\n\n%s" % (urlparse.urlsplit(url).netloc,  r.text))
                     raise RuntimeError('File [%s] transfer failed. ' % input_path)
                 else:
+                    for chunk in r.iter_content(CHUNK_SIZE):
+                        pass
                     logger.info('File [%s] transfer successful.' % input_path)
         except requests.exceptions.RequestException as e:
             raise RuntimeError('HTTP Request Exception: %s %s' % (e.errno, e.message))
