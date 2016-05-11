@@ -42,7 +42,6 @@ setup(
         'xml'],
     install_requires=['ordereddict',
                       'requests',
-                      'pyodbc',
                       'xlrd',
                       'bagit==1.5.4.dev'],
     dependency_links=[
