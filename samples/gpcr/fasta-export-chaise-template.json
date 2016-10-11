@@ -1,0 +1,158 @@
+{
+  "templates": [
+    {
+      "name": "orf",
+      "format_name": "FASTA (ORF)",
+      "format_type": "FILE",
+      "outputs": [
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!orf::null::&!orf=%3F",
+            "column_map": {
+              "title": "title",
+              "orf": "orf"
+            }
+          },
+          "destination": {
+            "name": "orf",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "orf":"data"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "protein",
+      "format_name": "FASTA (Protein)",
+      "format_type": "FILE",
+      "outputs": [
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!receptor_protein_sequence::null::",
+            "column_map": {
+              "title": "title",
+              "receptor_protein_sequence": "receptor_protein_sequence"
+            }
+          },
+          "destination": {
+            "name": "protein",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "receptor_protein_sequence":"data"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "nucleotide",
+      "format_name": "FASTA (Nucleotide)",
+      "format_type": "FILE",
+      "outputs": [
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!exptnucseq::null::&!exptnucseq=NONE",
+            "column_map": {
+              "title": "title",
+              "exptnucseq": "exptnucseq"
+            }
+          },
+          "destination": {
+            "name": "nucleotide",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "exptnucseq":"data"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "all_fasta",
+      "format_name": "BAG (ALL FASTA)",
+      "format_type": "BAG",
+      "outputs": [
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!orf::null::&!orf=%3F",
+            "column_map": {
+              "title": "title",
+              "orf": "orf"
+            }
+          },
+          "destination": {
+            "name": "orf",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "orf":"data"
+              }
+            }
+          }
+        },
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!receptor_protein_sequence::null::",
+            "column_map": {
+              "title": "title",
+              "receptor_protein_sequence": "receptor_protein_sequence"
+            }
+          },
+          "destination": {
+            "name": "protein",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "receptor_protein_sequence":"data"
+              }
+            }
+          }
+        },
+        {
+          "source": {
+            "name": "gpcr_browser:construct_gui",
+            "type": "attribute",
+            "filter": "!exptnucseq::null::&!exptnucseq=NONE",
+            "column_map": {
+              "title": "title",
+              "exptnucseq": "exptnucseq"
+            }
+          },
+          "destination": {
+            "name": "nucleotide",
+            "type": "fasta",
+            "params": {
+              "column_map": {
+                "title":"comment",
+                "exptnucseq":"data"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
