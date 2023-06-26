@@ -1,3 +1,8 @@
+## DEPRECATION NOTE: 
+#### This codebase is deprecated in favor of newer code contained in the following projects:
+* [deriva-py](https://github.com/informatics-isi-edu/deriva-py)
+* [deriva-web](https://github.com/informatics-isi-edu/deriva-web)
+
 # IObox
 
 IObox is a collection of Extract, Transform, Load (ETL) utilities for
